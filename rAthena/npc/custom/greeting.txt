@@ -1,0 +1,12 @@
+-	script	greeting	-1,{
+	OnPCLoginEvent:
+		mes "Welcome to Divine RO.  Here are a few links you should check out!";
+		mes "<URL>Divine-RO.net<INFO>http://divine-ro.net/</INFO></URL>";
+		mes "<URL>Divine-RO Forums<INFO>http://divine-ro.net/forums</INFO></URL>";
+		mes "<URL>VOTE FOR POINTS!<INFO>http://divine-ro.net/?module=voteforpoints</INFO></URL>";
+		mes "<URL>Divine-RO Discord<INFO>https://discord.gg/BVyzUNe</INFO></URL>";
+		mes "<URL>Divine-RO Twitter<INFO>https://twitter.com/DivineRagnarok</INFO></URL>";
+		mes "<URL>Divine-RO FB<INFO>https://www.facebook.com/DivineRO.net/</INFO></URL>";
+		close;
+	end;
+}

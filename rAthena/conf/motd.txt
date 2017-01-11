@@ -1,0 +1,3 @@
+// Internal default is limited to 128 lines.  If you need more, you will need to modify the MOTD_LINE_SIZE definition in pc.c
+Welcome to Divine-RO a rAthena Server! Enjoy! Please report any bugs you find to the service desk at http://divine-ro.net.
+Also be sure to join our discord for up-to-the minute updates and changes, as well as event information! https://discord.gg/BVyzUNe

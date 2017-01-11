@@ -1,0 +1,26 @@
+prontera,148,166,5	script	Bloody Tree	999,{
+	set .npcName$,"[Bloody Tree]";
+	mes "Greetings traveler...";
+	mes "I am here to offer you the results of some dark magic. Bring me 100 Dead Branches and I will show you what I can do!";
+	next;
+	switch(select("Bloody Branch:Nevermind")) {
+		case 1:
+			if((countitem(604) < 100) && (Zeny < 500000)) {
+				mes .npcName$;
+				mes "I need 100 Dead Branches and 500,000 zeny to work my magick! BE GONE WITH YOU!!";
+				unitkill getcharid(3); skilleffect "NPC_SELFDESTRUCTION",1; emotion e_omg;
+				close;
+			} else {
+				delitem 604,100;
+				set zeny, zeny-500000;
+				getitem 12103,1;
+				mes .npcName$;
+				mes "Be careful where you choose to use this.";
+				close;
+			}
+		case 2:
+			mes .npcName$;
+			mes "Nevermind yourself!";
+			close;
+	}
+}

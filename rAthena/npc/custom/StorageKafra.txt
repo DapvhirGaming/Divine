@@ -1,0 +1,20 @@
+prontera,163,187,5	script	Storage Kafra	112,{
+    mes "[ Kafra ]";
+    mes "Which storage do you want to open?";
+    next;
+    switch(select("Normal Storage","Premium Storage")) {
+        case 1:
+            mes "[ Kafra ]";
+            mes "Storage will be opened. Thank you";
+            close2;
+            openstorage;
+            break;
+        case 2:
+            mes "[ Kafra ]";
+            mes "Premium storage will be opened";
+            close2;
+            openstorage2(1,STOR_MODE_GET|STOR_MODE_PUT);
+            break;
+    }
+    end;
+}

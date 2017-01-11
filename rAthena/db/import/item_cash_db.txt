@@ -1,0 +1,87 @@
+// Cash Shop Database
+// Contains the items sold in the ingame cash shop.
+//
+// Structure of Database:
+// Type,ItemID,Price
+//
+// Type:
+//    0: New
+//    1: Hot
+//    2: Limited
+//    3: Rental
+//    4: Gear
+//    5: Buff
+//    6: Heal
+//    7: Other
+//
+// Price:
+//    Item cost, in cash points (#CASHPOINTS).
+0,30000,1900 //Giant Angel Wing
+0,30036,100  //Giant Angel Wing
+0,30012,1900 //Big Angel Wing
+0,30048,100  //Costume Big Angel Wing
+0,30021,1900 //Dark Dragon Wing
+0,30057,100  //Costume Dark Dragon Wing
+0,30002,1900 //Angel Devil Wings 
+0,30038,100  //Costume Angel Devil Wings
+0,30032,1900 //Giant Phoenix Wings
+0,30068,100  //Costume Giant Phoenix Wings
+0,30028,1900 //Seraphim Wings
+0,30064,100  //Costume Seraphim Wings
+0,30026,1900 //Dragon Wings
+0,30062,100  //Costume Dragon Wings
+0,30016,1900 //Translucent Angel Wings
+0,30052,100  //Costume Translucent Angel Wings
+0,30015,1900 //Monarch Wings
+0,30051,100  //Costume Monarch Wings
+0,30013,1900 //Bloody Butterfly Wings
+0,30049,100  //Costume Bloody Butterfly Wings
+0,30003,900  //Archangel Wings
+0,30039,100  //Costume Archangel Wings
+0,30008,900  //Arctic Wings
+0,30044,100  //Costume Arctic Wings
+0,30017,900  //Blue Fairy Wings
+0,30053,100  //Costume Blue Fairy Wings
+0,30007,900  //Cherubims Wings
+0,30043,100  //Costume Cherubim Wings
+0,30018,900  //Dark Devil Wings
+0,30054,100  //Costume Dark Devil Wings
+0,30019,900  //Dark Fairy Wings
+0,30055,100  //Costume Dark Fairy Wings
+0,30022,900  //Fallen Angel Wings
+0,30058,100  //Costume Fallen Angel Wings
+0,30014,900  //Red Fairy Wings
+0,30050,100  //Costume Red Fairy Wings
+0,30027,900  //Sun God Wings
+0,30063,100  //Costume Sun God Wings
+0,30024,900  //Wings of Wrath
+0,30060,100  //Costume Wings of Wrath
+0,30005,400  //Living Angeling Wings
+0,30041,100  //Costume Living Angeling Wings
+0,30006,400  //Living Deviling Wings
+0,30042,100  //Costume Living Deviling Wings
+0,30009,400  //Sparrow Wings
+0,30045,100  //Costume Sparrow Wings
+0,30011,400  //Crow Wings
+0,30047,100  //Costume Crow Wings
+0,30023,400  //Little Devil Wings
+0,30059,100  //Costume Little Devil Wings
+1,12212,1500 //Giant Fly Wing
+1,12887,1000 //Infinite Fly Wing
+1,6225,200   //HD Carnium
+1,16259,800  //Box of 5 HD Carnium
+1,16261,1500 //Box of 10 HD Carnium
+1,6226,200   //HD Bradium
+1,16258,800  //Box of 5 HD Bradium
+1,16260,1500 //Box of 10 HD Bradium
+1,6240,100   //HD Oridecon
+1,16393,400  //Box of 5 HD Oridecon
+1,16394,700  //Box of 10 HD Oridecon
+1,17247,2300 //Box of 30 HD Oridecon
+1,17104,3900 //Box of 50 HD Oridecon
+1,6241,100   //HD Elunium
+1,16395,400  //Box of 5 HD Elunium
+1,16396,700  //Box of 10 HD Elunium
+1,17246,2300 //Box of 30 HD Elunium
+1,17105,3900 //Box of 50 HD Elunium
+1,7581,700   //30 Days VIP account

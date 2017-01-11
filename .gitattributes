@@ -1,0 +1,4 @@
+*.grf filter=lfs diff=lfs merge=lfs -text
+*.thor filter=lfs diff=lfs merge=lfs -text
+*.thor2 filter=lfs diff=lfs merge=lfs -text
+*.pack filter=lfs diff=lfs merge=lfs -text

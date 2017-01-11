@@ -1,0 +1,171 @@
+prt_in,65,64,3	script	Elemental Stones	906,{
+	callfunc "elestone","Lily";
+	end;
+}
+// Stone Functions
+//============================================================
+function	script	elestone	{
+	if (checkweight(1201,1) == 0) {
+		mes "- Wait a minute !! -";
+		mes "- Currently you're carrying -";
+		mes "- too many items with you. -";
+		mes "- Please try again -";
+		mes "- after you lose some weight. -";
+		close;
+	}
+	.@npc_name$ = getarg(0);
+	mes "["+ .@npc_name$ +"]";
+	mes "I can purify your fragments into Elemental Stones!";
+	mes "I'll need 25 of the stone fragments to create one Elemental Stone!";
+	mes "I can also break down any existing Elemental stones into 25 pieces!";
+	next;
+	switch(select("Make Flame Heart:Make Rough Wind:Make Mystic Frozen:Make Great Nature:Break Flame Heart:Break Rough Wind:Break Mystic Frozen:Break Great Nature")) {
+	case 1:
+		set .@itemTotal,countitem(990);
+		set .@totalfh,0;
+		while (1) {
+			if(.@itemTotal > 24) {
+				delitem 990,25;  //Red Blood
+				getitem 994,1; // Flame Heart
+				set .@itemTotal,.@itemTotal - 25;
+				set .@totalfh,.@totalfh + 1;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Flame Hearts.";
+		mes "You got a total of: " + .@totalfh;
+		mes "You're welcome to come back whenever you want.";
+		close;
+	case 2:
+		set .@itemTotal,countitem(992);
+		set .@totalrw,0;
+		while (1) {
+			if(.@itemTotal > 24) {
+				delitem 992,25;  //Wind of Verdure
+				getitem 996,1; //Rough Wind
+				set .@itemTotal,.@itemTotal - 25;
+				set .@totalrw,.@totalrw + 1;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Rough Winds.";
+		mes "You got a total of: " + .@totalrw;
+		mes "You're welcome to come back whenever you want.";
+		close;
+	case 3:
+		set .@itemTotal,countitem(991);
+		set .@totalmf,0;
+		while (1) {
+			if(.@itemTotal > 24) {
+				delitem 991,25;  //Crystal Blue
+				getitem 995,1; //Mystic Frozen
+				set .@itemTotal,.@itemTotal - 25;
+				set .@totalmf,.@totalmf + 1;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Mystic Frozen.";
+		mes "You got a total of: " + .@totalmf;
+		mes "You're welcome to come back whenever you want.";
+		close;
+	case 4:
+		set .@itemTotal,countitem(993);
+		set .@totalgn,0;
+		while (1) {
+			if(.@itemTotal > 24) {
+				delitem 993,25;  //Green Live
+				getitem 997,1; //Great Nature 
+				set .@itemTotal,.@itemTotal - 25;
+				set .@totalgn,.@totalgn + 1;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Great Natures.";
+		mes "You got a total of: " + .@totalgn;
+		mes "You're welcome to come back whenever you want.";
+		close;
+	case 5:
+		set .@itemTotal,countitem(994);
+		set .@totalrb,0;
+		while (1) {
+			if(.@itemTotal > 0) {
+				delitem 994,1;  //Flame Heart
+				getitem 990,20; //Red Blood
+				set .@itemTotal,.@itemTotal - 1;
+				set .@totalrb,.@totalrb + 20;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Red Bloods.";
+		mes "You got a total of: " + .@totalrb;
+		mes "You're welcome to come back whenever you want.";
+		close;
+	case 6:
+		set .@itemTotal,countitem(996);
+		set .@totalwv,0;
+		while (1) {
+			if(.@itemTotal > 0) {
+				delitem 996,1;  //Rough Wind
+				getitem 992,20; //Wind of Verdure
+				set .@itemTotal,.@itemTotal - 1;
+				set .@totalwv,.@totalwv + 25;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Winds of Verdure.";
+		mes "You got a total of: " + .@totalwv;
+		mes "You're welcome to come back whenever you want.";
+		close;
+	case 7:
+		set .@itemTotal,countitem(995);
+		set .@totalcb,0;
+		while (1) {
+			if(.@itemTotal > 0) {
+				delitem 995,1;  //Mystic Frozen
+				getitem 991,20; //Crystal Blue
+				set .@itemTotal,.@itemTotal - 1;
+				set .@totalcb,.@totalcb + 20;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Mystic Frozen.";
+		mes "You got a total of: " + .@totalmf;
+		mes "You're welcome to come back whenever you want.";
+		close;
+	case 8:
+		set .@itemTotal,countitem(997);
+		set .@totallg,0;
+		while (1) {
+			if(.@itemTotal > 0) {
+				delitem 997,1;  //Great Nature
+				getitem 993,20; //Green Live 
+				set .@itemTotal,.@itemTotal - 1;
+				set .@totallg,.@totallg + 20;
+			} else {
+				break;
+			}
+		}
+		mes "["+ .@npc_name$ +"]";
+		mes "Here's your Live Greens.";
+		mes "You got a total of: " + .@totallg;
+		mes "You're welcome to come back whenever you want.";
+		close;
+			}
+		}
+		
+	
+}

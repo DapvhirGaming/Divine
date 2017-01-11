@@ -1,0 +1,13 @@
+-	script	announcer	-1,{
+OnInit:
+set .Time,300;
+setarray .News$[0],
+"Welcome to DivineRO! We hope you will enjoy your stay!",
+"Be sure to register for the forums, or join our discord for up-to date information!",
+"Be sure to report any bugs you find on the support section of the website! People who help find bugs will be rewarded!",
+"Do not forget to run DivinePatcher.exe regularly!!",
+"Want to see us grow? Be sure to vote daily through the control panel! You can vote once every 12 hours!",
+"Enjoying your time here, but wishing we were a little bigger? Feel free to leave us a review on RMS, or on their forums!",
+"Downtime is scheduled this saturday 1-7-17 from 9am-12pm server time CST GMT-5!";
+while( 1 ) { announce .News$[ rand( getarraysize( .News$ ) ) ], bc_all, 0xDA70D6;
+sleep ( .Time * 3000 ); } end; }

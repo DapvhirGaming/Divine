@@ -1,0 +1,1084 @@
+
+
+
+xmas,238,303,3	script	Celine#instance	10032,{
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	.@has_instance = ( instance_mapname( .map$[0] ) != "" );
+
+	mes "^0055FF[ "+.instance_name$+" ]^000000";
+	mes "There seem to be something happened to a very old Toy Factory. The workers are acting very weird there. Somebody spotted Celine Kimi appeared in the Factory as well. The Toys maker went missing.";
+	mes "Anyone could assist me to find out what have happened there ?";
+	next; 
+	switch( select( 
+		( .@party_id && .@is_leader && !.@has_instance )?"Generate Memorial Dungeon":"",
+		( .@party_id && .@has_instance )?"Enter Memorial Dungeon":"",
+		( .@party_id && .@is_leader && .@has_instance )?"Destroy Memorial Dungeon":"",
+		"Leave"
+	)){
+		case 1:
+			getpartymember .@party_id,2;
+			if( .min_party_member >= 1 ){
+				.@origin = getcharid(3);
+				.@time = gettimetick(2);
+				for( .@i = 0; .@i < $@partymembercount; .@i++ )
+					if( attachrid( $@partymemberaid[.@i] ) ){
+						.@member_count++;
+						if( .delay_timer && .@time < instance_toyfactory ){
+							.@name$ = strcharinfo(0);
+							break;
+						}
+					}
+				attachrid( .@origin );
+			}
+			if( .@name$ != "" ){
+				mes "Player - ^0055FF"+.@name$+"^000000 still having cooldown right now, he/she cant join the Instance at the moment.";
+				break;
+			}
+			
+			setarray .@party_member,1,12;
+			if( .@member_count < .@party_member[0] || .@member_count > .@party_member[1] ){
+				mes "If you wish to join us...";
+				mes "Form a party with "+.@party_member[0]+" ~ "+.@party_member[1]+" members.";
+				break;
+			}
+			else {
+				.@instance = instance_create( .instance_name$ );
+				if( .@instance < 0 ) {
+					npctalk "Memorial Dungeon reservation failed.";
+					mes "^0000FF"+.instance_name$+" ^000000- Reservation Failed!";
+					close;
+				}
+				mes "^0000FF"+.instance_name$+" ^000000 - Reserved";
+				npctalk "Memorial Dungeon has been generated for Party - "+getpartyname( .@party_id );
+				getpartymember .@party_id,2;
+				close2;
+				for( .@i = 0; .@i < $@partymembercount; .@i++ )
+					if( attachrid( $@partymemberaid[.@i] ) ) {
+						Zeny -= .zeny_cost;
+						// callsub( L_enter );
+					}
+				end;
+			}
+		case 2:
+			if( instance_mapname( .map$[0] ) == "" ){
+				npctalk "Memorial Dungeon doesnt exist for Party - "+getpartyname( .@party_id );
+			}
+			else{
+				callsub( L_enter );
+			}
+			break;
+		case 3:
+			mes "Memorial Dungeon Destroyed.";
+			instance_destroy instance_id();
+			break;
+		default: 
+			// mes "This is a Memorial Dungeon.";
+			break;
+	}
+	close;
+	
+	L_enter:
+		.@ins = instance_enter( .instance_name$ );
+		switch ( .@ins ) {
+			case 0: 
+				instance_toyfactory = gettimetick(2) + .delay_timer;
+				break;
+			case 1:
+				mes "You can enter the dungeon after making the party.";
+				close;
+			case 2:
+				mes "The memorial dungeon Endless Tower does not exist.";
+				mes "The party leader did not generate the dungeon yet.";
+				close;
+			case 3:
+				mes "An unknown error has occurred.";
+				close;
+		}
+		return;
+
+	OnInit:
+		// delay in second
+		.delay_timer = ( 23 * 3600 );
+		// min. party member
+		.min_party_member = 1;
+		// name of Instance
+		.instance_name$ = "Horror Toy Factory";
+		
+		// instance map lists
+		setarray .map$,"1@xm_d";
+
+		.map_size = getarraysize( .map$ );
+		
+		setitemscript 22534,"{ doevent \""+strnpcinfo(3)+"::OnBox\"; }";
+		end;
+		
+	OnBox: // rewards for Closed Mind Box.
+		setarray .@reward_nameid,732,719,7449,7642,969,11563,2977,2978,18848,1098,616,617,11564;
+		setarray .@reward_amount, 10, 10,  10,   5,  2,    5,   1,   1,    1,  10,  1,  3    ,5;
+		
+		.@random = getarraysize( .@reward_nameid );
+		getitem .@reward_nameid[.@random],.@reward_amount[.@random];
+		end;
+}
+
+
+1@xm_d,115,15,7	script	Factory Uniform#cookie	10033,{
+	progressbar "0xFFFFFF",3;
+	transform "Christmas Cookie",300000,SC_MTF_MHP,1000;
+
+	end;
+	
+	OnInstanceInit:
+		hideonnpc strnpcinfo(3);
+		end;
+		
+	OnEnable:
+		hideoffnpc strnpcinfo(3);
+		sleep 1000;
+		donpcevent strnpcinfo(3)+"::OnEffect";
+		end;
+	
+	OnEffect:
+		specialeffect EF_BIG_PORTAL2;
+		end;
+}
+
+1@xm_d,187,92,4	duplicate(Factory Uniform#cookie)	Factory Uniform#cookie1	10033
+
+
+1@xm_d,64,126,7	script	Factory Uniform#mystcase	10033,{
+	progressbar "0xFFFFFF",3;
+	transform "Myst Case",300000,SC_MTF_MHP,1000;
+	end;
+	
+	OnInstanceInit:
+		hideonnpc strnpcinfo(3);
+		end;
+		
+	OnEnable:
+		hideoffnpc strnpcinfo(3);
+		sleep 1000;
+		donpcevent strnpcinfo(3)+"::OnEffect";
+		end;
+	
+	OnEffect:
+		specialeffect EF_BIG_PORTAL2;
+		end;
+}
+
+
+
+
+1@xm_d,90,30,4	script	factory_trap_zone1	-1,10,10,{
+	end;
+	
+	OnTouch:
+		if ( getstatus( SC_MONSTER_TRANSFORM,1 ) != 1246 ) {
+			specialeffect2 EF_FLASHER;
+			.@label$ = instance_npcname( "Production Manager#1" )+"::OnKill";
+			getmapxy( .@map$,.@x,.@y,0 );
+			areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2990,rand(10),.@label$;
+			areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2992,rand(5),.@label$;
+			areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2993,rand(5),.@label$;
+			areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2994,rand(3),.@label$;
+			areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2995,rand(3),.@label$;
+			mapannounce .@map$,"Security Alert: Found Intruders! It's Human! Show them no mercy!!",bc_map,0xFF0000;
+			detachrid;
+			disablenpc strnpcinfo(3);
+			sleep 15000;
+			enablenpc strnpcinfo(3);
+		}
+		end;
+}
+
+1@xm_d,60,30,4	duplicate(factory_trap_zone1)	factory_trap_zone1#1	-1,10,10
+1@xm_d,20,30,4	duplicate(factory_trap_zone1)	factory_trap_zone1#2	-1,10,10
+1@xm_d,20,62,4	duplicate(factory_trap_zone1)	factory_trap_zone1#3	-1,10,10
+1@xm_d,24,99,4	duplicate(factory_trap_zone1)	factory_trap_zone1#4	-1,10,10
+1@xm_d,55,94,4	duplicate(factory_trap_zone1)	factory_trap_zone1#5	-1,10,10
+1@xm_d,56,58,4	duplicate(factory_trap_zone1)	factory_trap_zone1#6	-1,10,10
+1@xm_d,94,58,4	duplicate(factory_trap_zone1)	factory_trap_zone1#7	-1,10,10
+1@xm_d,92,102,4	duplicate(factory_trap_zone1)	factory_trap_zone1#8	-1,10,10
+1@xm_d,118,88,4	duplicate(factory_trap_zone1)	factory_trap_zone1#9	-1,10,10
+1@xm_d,39,116,4	duplicate(factory_trap_zone1)	factory_trap_zone1#10	-1,10,10
+
+
+
+
+1@xm_d,111,20,3	script	Celine#zone1	10032,{
+
+	if ( 'talking || 'part >= 2 ) end;
+	
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	
+	
+	if ( !.@is_leader ) {
+		mes "I only talk to leader.";
+		close;
+	}
+	else {
+		mes "Are there any members disguise as monsters and come with you ??";
+		if ( select( "Cancel","Continue" ) == 2 ) {
+			close2;
+			.@map$ = "1@xm_d";
+			'talking = 1;
+			detachrid;
+			npctalk "This is the First Zone of the Factory, place where we gather all the toys.";
+			sleep 2500;
+			npctalk "Now I remember! I used to be get caught by the guards for not wearing any uniform here!";
+			sleep 2500;
+			mapannounce .@map$,"Factory Broadcast: Okay everyone, time to wake up. It's Happy Hours now!",bc_map,0x397D02;
+			sleep 1500;
+			npctalk "But, what happened here? There isn't any single human here but all are toys in the factory, exactly like a worker...";
+			sleep 2500;
+			npctalk "Perhap the factory has been abandoned for a long time and now it's conquered by horror spirits.";
+			sleep 2500;
+			mapannounce .@map$,"Factory Broadcast: Remember to clear the rubbish and stay safe!",bc_map,0x397D02;
+			sleep 1500;
+			npctalk "This place still look very alike to the past. No! it's exactly still the same !";
+			sleep 2500;
+			mapannounce .@map$,"Factory Broadcast: Let's work hard today, build a better future!",bc_map,0x397D02;
+			sleep 1500;
+			npctalk "Dont be so happy about it, we need to terminate the work progress and move to the last zone of the Factory.";
+			sleep 2500;
+			mapannounce .@map$,"Factory Broadcast: Zone 1 of the Factory are now running, remember to wear safety helmet.",bc_map,0x397D02;
+			sleep 1500;
+			npctalk "We shall recover these toys.";
+			sleep 2500;
+			npctalk "Er, to recover these toys, I think we may need to battle against these toys. I have no idea.";
+			sleep 2500;
+			npctalk "Oh ya, probably the toys are now disguised as guards as well. I remember there was a box that contain the uniform ...";
+			sleep 2500;
+			mapannounce .@map$,"Factory Broadcast: Remember to wear your ID and uniform all the time, else action will be taken by guards.",bc_map,0x397D02;
+			sleep 1500;
+			npctalk "LOL, it's actually just right behind me, you better wear a uniform before you go, luckily I still have the ID card with me.";
+			sleep 2500;
+			'part = 1;
+			hideoffnpc instance_npcname( "Factory Uniform#cookie" );
+			npctalk "I will just walk around here, see how things has changed over the time when I wasn't here.";
+			sleep 2500;
+			npctalk "Good Luck, I will just wait you at the other zone of the Factory.";
+			sleep 2500;
+			donpcevent strnpcinfo(3)+"::OnEnable";
+			'part = 2;
+			'talking = 0;
+			end;
+		}
+	}
+	close;
+	
+	OnInstanceInit:
+		'talking = 0;
+		'part = 0;
+		end;
+		
+	OnEnable:
+		.@map$ = strnpcinfo(4);
+		.@label$ = strnpcinfo(3)+"::OnMyMobDead";
+		areamonster .@map$,10,18,122,122,"--ja--",2989,50,.@label$;
+		areamonster .@map$,10,18,122,122,"--ja--",2991,25,.@label$;
+		areamonster .@map$,10,18,122,122,"--ja--",2990,5,.@label$;
+		// areamonster .@map$,111,20,111,20,"--ja--",2990,1,.@label$; // test
+		end;
+		
+	OnMyMobDead:
+		.@map$ = strnpcinfo(4);
+		.@label$ = strnpcinfo(3)+"::OnMyMobDead";
+		.@mobcount = mobcount( .@map$,.@label$ );
+		
+		if ( .@mobcount == 30 ) {
+			mapannounce .@map$,"Factory Broadcast: Where is everyone? Worker must not leave their work halfway!",bc_map,0xFF0500;
+		} 
+		else if ( .@mobcount == 10 ) {
+			mapannounce .@map$,"Factory Broadcast: Now we're lack of human resources to transfer the Gift Box to Zone 2 of the Factory.",bc_map,0xFF0500;
+		}
+		else if ( .@mobcount == 0 ) {
+			mapannounce .@map$,"Factory Broadcast: There is one Gift Box located at 11 o'clock, anyone can help me transfer it to Zone 2 ?",bc_map,0xFF0500;
+			donpcevent instance_npcname( "Production Manager#1" )+"::OnEnable";
+			viewpoint 1,70,130,1,0x00EE00;
+		}
+		end;
+}
+
+
+
+1@xm_d,72,129,3,	script	Production Manager#1	1246,{
+
+	if ( mobcount( strnpcinfo(4),instance_npcname( "Production Manager#1" )+"::OnKill" ) ) {
+		mes "Intruder shall not enter the Factory!! LEAVE!!!";
+		mes "The Guard is coming for you!";
+		close;
+	}
+	mes "Hurry up everyone, the kids is waiting for the gift box.";
+	next;
+	mes "Take the ^FF0000Gift Box^000000 over there and send it to the east zone. It's a huge one, so carefully transport it to the other side.";
+	close2;
+	donpcevent instance_npcname( "Factory Uniform#mystcase" )+"::OnEnable";
+	end;
+	
+	OnInstanceInit:
+		hideonnpc strnpcinfo(3);
+		end;
+		
+	OnEnable:
+		hideoffnpc strnpcinfo(3);
+		end;
+		
+	OnKill: 
+		end;
+}
+
+
+
+
+
+1@xm_d,76,129,4	script	Zone Portal#outside1	45,2,2,{	
+	OnTouch:
+		if ( getstatus( SC_MONSTER_TRANSFORM,1 ) == 1249 ) {
+			warp strcharinfo(3),81,129;
+			viewpoint 1,174,129,1,0x00EE00;
+		}
+		end;
+}
+
+1@xm_d,179,129,4	script	Zone Portal#inside1	45,2,2,{	
+	OnTouch:
+		if ( getstatus( SC_MONSTER_TRANSFORM,1 ) == 1249 ) {
+			warp strcharinfo(3),181,105;
+		}
+		end;
+}
+
+
+
+1@xm_d,185,101,3	script	Celine#zone2	10032,{
+
+	if ( 'talking || 'part != 2 ) end;
+	
+	.@aid = getcharid(0);
+	.@party_id = getcharid(1);
+	.@is_leader = ( .@aid  == getpartyleader(.@party_id,2) );
+	
+	
+	if ( !.@is_leader ) {
+		mes "I only talk to leader.";
+		close;
+	}
+	else {
+	
+		if ( select( "Cancel","Continue" ) == 2 ) {
+			mes "Luckily you have successfully passed the security check. Let me take a breath!";
+			npctalk "Luckily you have successfully passed the security check. Let me take a breath!";
+			close2;
+			.@origin = getcharid(3);
+			.@map$ = "1@xm_d";
+			detachrid;
+			npctalk "This is the Second Zone of the Factory, place where worker pack all the toys.";
+			sleep 2500;
+			npctalk "Long ago, this place is crowded with human, but it's not anymore. It's so empty now.";
+			sleep 2500;
+			npctalk "When I walk around here, I noticed some toys and kids around here.";
+			sleep 2500;
+			npctalk "They look much like a sorrow spirits.";
+			sleep 2500;
+			npctalk "Please sent them to heaven just in case they start behave aggresive to the adventurers!";
+			sleep 2500;
+			npctalk "But, if you found any Worker that are still working, try ask them about the Toy Maker. ";
+			sleep 2500;
+			npctalk "It would be our only hope to search for the Toy Maker if they could recover their memories.";
+			sleep 2500;
+			npctalk "Try walk around here, see if you can find any information for the Toy Maker.";
+			sleep 2500;
+			npctalk "I will try visit the place where Toy Maker were last seen.";
+			sleep 2500;
+			npctalk "Pardon me, we'll just meet again later.";
+			sleep 2500;
+			hideonnpc strnpcinfo(3);
+			hideoffnpc instance_npcname( "Factory Uniform#cookie1" );
+			
+			attachrid( .@origin );
+			for ( .@i = 0; .@i < 10; .@i++ ) {
+				hideoffnpc instance_npcname( "Worker#"+.@i );
+				getmapxy( .@map$,.@x,.@y,1,"Worker#"+.@i );
+				viewpoint 1,.@x,.@y,( .@i+1 ),0x00EE00;
+			}
+			detachrid;
+
+			areamonster .@map$,128,16,245,115,"--ja--",2990,rand(15);
+			areamonster .@map$,128,16,245,115,"--ja--",2992,rand(15);
+			areamonster .@map$,128,16,245,115,"--ja--",2993,rand(15);
+			areamonster .@map$,128,16,245,115,"--ja--",2994,rand(10);
+			areamonster .@map$,128,16,245,115,"--ja--",2995,rand(10);
+			areamonster .@map$,128,16,245,115,"--ja--",2987,rand(10);
+			areamonster .@map$,128,16,245,115,"--ja--",2991,30;
+			areamonster .@map$,128,16,245,115,"--ja--",2989,50;
+			
+			'part = 3;
+			'total_worker = 10;
+			mapannounce .@map$,"Factory Broadcast: Confirmation of Worker, currently there are "+'total_worker+" worker still working!",bc_map,0x397D02;
+			'talking = 0;
+			end;
+			
+		}
+	}
+	close;
+}
+
+
+1@xm_d,154,97,4	script	Worker#0	1246,{
+
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	
+	if ( getstatus( SC_MONSTER_TRANSFORM,1 ) != 1246 ) {
+		npctalk "I found the Intruder!!!";
+		
+		specialeffect EF_FLASHER;
+		.@label$ = instance_npcname( "Zone Portal#outside2" )+"::OnKill";
+		getmapxy( .@map$,.@x,.@y,0 );
+		areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2990,rand(10),.@label$;
+		areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2992,rand(5),.@label$;
+		areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2993,rand(5),.@label$;
+		areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2994,rand(3),.@label$;
+		areamonster .@map$,( .@x-3 ),( .@y-3 ),( .@x+3 ),( .@y+3 ),"Factory Guard",2995,rand(3),.@label$;
+		mapannounce .@map$,"Security Alert: Found Intruders! It's Human! Show them no mercy!!",bc_map,0xFF0000;
+	}
+	else if ( !.@is_leader ) {
+		npctalk "Please dont disturb my work here!";
+	}
+	else if ( 'part == 3 ) {
+		mes "Erm, is there anything I can help ?";
+		next;
+		if ( select( "Cancel","Ask for Toy Maker information" ) == 2 ) {
+			.@msg$ = F_Rand( 
+				"Kimi didnt murder Old Grandpa. Kimi try to save grandpa.",
+				"Kimi is a good kid and kind but everyone scared of Kimi.",
+				"Oh, that Grandpa? He is nice. He help us to do the maintenance everyday.",
+				"Grandpa is a nice person, Kimi is so pity. Kimi love Grandpa, Grandpa death make me very sad.",
+				"You heard that the Old Grandpa Toy Maker is murdered by Kimi? Bullshit, who said that! Kimi try to save grandpa!",
+				"Grandpa have heart isnt in good condition, that day Kimi try to save grandpa when grandpa is getting the heart attack.",
+				"Kimi didnt murder Old Grandpa!"
+			);
+			mes .@msg$;
+			npctalk .@msg$;
+			close2;
+			'total_worker--;
+			if ( 'total_worker ) {
+				mapannounce strcharinfo(3),"Factory Broadcast: Confirmation of Worker, currently there are "+'total_worker+" worker still working!",bc_map,0x397D02;
+			}
+			else {
+				mapannounce strcharinfo(3),"Factory Broadcast: All the worker has left, Shutting down the factory zone and opening the rest room for worker!",bc_map,0x397D02;
+			}
+			hideonnpc strnpcinfo(3);
+			end;
+		}
+		close;
+	}
+	end;
+	
+	OnInstanceInit:
+		hideonnpc strnpcinfo(3);
+		end;
+}
+
+1@xm_d,133,70,4	duplicate(Worker#0)	Worker#1	1246
+1@xm_d,134,45,4	duplicate(Worker#0)	Worker#2	1246
+1@xm_d,140,32,4	duplicate(Worker#0)	Worker#3	1246
+1@xm_d,199,27,4	duplicate(Worker#0)	Worker#4	1246
+1@xm_d,216,14,4	duplicate(Worker#0)	Worker#5	1246
+1@xm_d,230,27,4	duplicate(Worker#0)	Worker#6	1246
+1@xm_d,240,16,4	duplicate(Worker#0)	Worker#7	1246
+1@xm_d,203,56,4	duplicate(Worker#0)	Worker#8	1246
+1@xm_d,181,53,4	duplicate(Worker#0)	Worker#9	1246
+
+
+
+1@xm_d,183,108,4	script	Zone Portal#outside2	45,2,2,{	
+	OnTouch:
+		if ( mobcount( strnpcinfo(4),instance_npcname( "Zone Portal#outside2" )+"::OnKill" ) > 0 ) {
+			mes "Intruder shall not enter the Factory!! LEAVE!!!";
+			mes "The Guard is coming for you!";
+			close;
+		}
+		else if ( 'total_worker ) {
+			message strcharinfo(0),"The rest room for worker isnt opened yet.";
+		}
+		else if ( getstatus( SC_MONSTER_TRANSFORM,1 ) == 1246 ) {
+			warp strcharinfo(3),168,129;
+			viewpoint 1,130,173,1,0x00EE00;
+		}
+		end;
+	
+	OnKill: 
+		end;
+}
+
+1@xm_d,129,178,4	script	Zone Portal#inside2	45,2,2,{	
+	OnTouch:
+		if ( getstatus( SC_MONSTER_TRANSFORM,1 ) == 1246 ) {
+			warp strcharinfo(3),130,189;
+		}
+		end;
+}
+
+
+1@xm_d,130,206,7	script	[Toy Maker] Old Grandpa	718,{
+
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	
+	if ( !.@is_leader || 'talking || 'part > 3 ) end;
+	
+	npctalk "Damn you Antonio, hurry up and undo the spell!!";
+
+	mes "even under situation like this, you cant just take away the items like that!";
+	
+	if ( getstatus( SC_MONSTER_TRANSFORM,0 ) ) {
+		mes "Ouch, it's impossible for you to untie me. The rope has a spell on it that prevent any worker from the factory to undo it.";
+		mes " ";
+		mes "I believe the spells is not working on humans, try seek for a human to help untie me.";
+	}
+	else {
+		mes "Are you human ?";
+		mes "Would you untie the rope ?? It has a spell on it and only can undo by the human.";
+		next;
+		if ( select( "Cancel","Okay, I am working on it now..." ) == 2 ) {
+			'talking = 1;
+			close2;
+			specialeffect EF_SUMMONSLAVE;
+			
+			.@map$ = strcharinfo(3);
+			.@santa_id = getnpcid( 0,strnpcinfo(3) );
+			.@antonio_id = getnpcid( 0,instance_npcname( "Greed Antonio" ) );
+			detachrid;
+			
+			unittalk .@antonio_id,"Hey old guy, let me said this to you ~ I like this Factory";
+			sleep 2500;
+			unittalk .@antonio_id,"The manager of this Factory isnt here anymore, and the Factory have everything that I like.";
+			sleep 1000;
+			unittalk .@santa_id,"I knew it, you would stole the things from the Factory. You're such a naive.";
+			sleep 2500;
+			unittalk .@antonio_id,"Is that so? I am just sharing everything that nobody want anymore.";
+			sleep 2500;
+			unittalk .@antonio_id,"ermmmm.....";
+			sleep 1000;
+			unittalk .@santa_id,"Haiz,... have you think of how the kids feel when they find out their gift was something stolen from others ??";
+			sleep 2500;
+			unittalk .@santa_id,"Do you really think they will feel happy about it ?";
+			sleep 2500;
+			unittalk .@antonio_id,"I will feel happy about it. It's a gift afterall.";
+			sleep 2500;
+			unittalk .@antonio_id,"Ah, the gifts is going to piling up like a mountains. The part is going to start!!";
+			sleep 2500;
+			unittalk .@santa_id,"Stop it Antonio!! The main point isn't the gift, but it's the behaviour of stealing something.";
+			sleep 2500;
+			mapannounce .@map$,"Factory Broadcast: The Transfer process in Zone 3 has just finished.",bc_map,0x397D02;
+			sleep 2500;
+			mapannounce .@map$,"Factory Broadcast: Please get ready to distribute the gifts.",bc_map,0x397D02;
+			unittalk .@antonio_id,"Hey, the human over there, you may join me if you wish!";
+			donpcevent instance_npcname( "Greed Antonio" )+"::OnDisable";
+			sleep 1500;
+			unittalk .@santa_id,"Antonio!! Think twice about it !!";
+			sleep 2000;
+			unittalk .@santa_id,"Hey, I hope you can help me stop Antonio !!";
+			sleep 1500;
+			enablenpc instance_npcname( "Zone Portal#santa1" );
+			enablenpc instance_npcname( "Zone Portal#santa2" );
+			hideonnpc strnpcinfo(3);
+			'part = 4;
+			'talking = 0;
+			
+			
+			areamonster .@map$,11,157,109,250,"--ja--",2990,10;
+			areamonster .@map$,11,157,109,250,"--ja--",2992,10;
+			areamonster .@map$,11,157,109,250,"--ja--",2993,10;
+			areamonster .@map$,11,157,109,250,"--ja--",2994,10;
+			areamonster .@map$,11,157,109,250,"--ja--",2995,10;
+			areamonster .@map$,11,157,109,250,"--ja--",2989,10;
+			areamonster .@map$,11,157,109,250,"--ja--",2987,10;
+			areamonster .@map$,11,157,109,250,"--ja--",2991,10;
+			
+			areamonster .@map$,82,224,243,254,"--ja--",2990,10;
+			areamonster .@map$,82,224,243,254,"--ja--",2992,10;
+			areamonster .@map$,82,224,243,254,"--ja--",2993,10;
+			areamonster .@map$,82,224,243,254,"--ja--",2994,10;
+			areamonster .@map$,82,224,243,254,"--ja--",2995,10;
+			areamonster .@map$,82,224,243,254,"--ja--",2989,10;
+			areamonster .@map$,82,224,243,254,"--ja--",2987,10;
+			areamonster .@map$,82,224,243,254,"--ja--",2991,10;
+			
+			areamonster .@map$,111,201,144,221,"--ja--",2990,10;
+			areamonster .@map$,111,201,144,221,"--ja--",2989,10;
+			areamonster .@map$,111,201,144,221,"--ja--",2987,10;
+			areamonster .@map$,111,201,144,221,"--ja--",2991,10;
+			end;
+		}
+		else {
+			mes "Okay. See ya.";
+		}
+	}
+	close;
+}
+
+
+1@xm_d,131,211,3	script	Greed Antonio	10019,{
+	end;
+	
+	OnDisable:
+		specialeffect EF_TELEPORTATION;
+		hideonnpc strnpcinfo(3);
+		monster strnpcinfo(4),227,234,"Antonio",2988,1,strnpcinfo(3)+"::OnKilled";
+		end;
+		
+	OnKilled:
+		enablenpc instance_npcname( "Zone Portal#santa3" );
+		enablenpc instance_npcname( "Zone Portal#santa4" );
+		mapannounce strcharinfo(3),"???? : If I could just leave silently, I wouldn't get hurt...",bc_map,0xFF0000;
+		viewpoint 1,147,209,1,0x00EE00;
+		'part = 5;
+		end;
+}
+
+
+1@xm_d,107,208,4	script	Zone Portal#santa1	45,2,2,{	
+	OnTouch:
+		warp strcharinfo(3),94,207;
+		viewpoint 1,224,237,1,0x00EE00;
+		end;
+		
+	OnInstanceInit:
+		disablenpc strnpcinfo(3);
+		end;
+}
+
+1@xm_d,99,208,4	script	Zone Portal#santa2	45,2,2,{	
+	OnTouch:
+		warp strcharinfo(3),111,207;
+		end;
+		
+	OnInstanceInit:
+		disablenpc strnpcinfo(3);
+		end;
+}
+
+
+1@xm_d,151,208,4	script	Zone Portal#santa3	45,2,2,{	
+	OnTouch:
+		warp strcharinfo(3),164,207;
+		viewpoint 1,228,183,1,0x00EE00;
+		end;
+		
+	OnInstanceInit:
+		disablenpc strnpcinfo(3);
+		end;
+}
+
+1@xm_d,160,208,4	script	Zone Portal#santa4	45,2,2,{	
+	OnTouch:
+		warp strcharinfo(3),145,207;
+		end;
+		
+	OnInstanceInit:
+		disablenpc strnpcinfo(3);
+		end;
+}
+
+
+
+
+1@xm_d,222,184,5	script	Celine#zone3	10032,{
+
+	if ( 'talking || 'part != 5 ) end;
+	
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	
+	
+	if ( !.@is_leader ) {
+		mes "I only talk to leader.";
+		close;
+	}
+	else {
+		if ( select( "Cancel","Continue" ) == 2 ) {
+			mes "Finally, you made it here, the Final Zone of the Factory!";
+			npctalk "Finally, you made it here, the Final Zone of the Factory!";
+			close2;
+			'talking = 1;
+			.@map$ = "1@xm_d";
+			.@celine_id = getnpcid( 0,strnpcinfo(3) );
+			.@kimi_id = getnpcid( 0,instance_npcname( "Celine Kimi#instance" ) );
+			detachrid;
+
+			unittalk .@celine_id,"Kimi! Listen to me! I didnt hate you!";
+			sleep 1500;
+			unittalk .@kimi_id,"Everyone hate me, I know you too hate me! A toy with horror appearance...";
+			sleep 2500;
+			unittalk .@celine_id,"Kimi! I have already heard of the story. Actually everyone like you.";
+			sleep 2500;
+			mapannounce .@map$,"Mysterious Voice : LIAR !!",bc_map,0xFF0500;
+			sleep 1500;
+			unittalk .@celine_id,"Kimi! Look at me and you will know I didnt lie to you!";
+			sleep 2500;
+			unittalk .@kimi_id,"If that so, why my name isnt called ?? 'Kimi' ...'Kimi'... I want to heard it from Grandpa.";
+			sleep 2500;
+			mapannounce .@map$,"Mysterious Voice : That's right Kimi. Grandpa scare of you when he saw your appearance!",bc_map,0xFF0500;
+			sleep 1500;
+			unittalk .@celine_id,"Dont listen to the voice Kimi, Grandpa love you!!";
+			sleep 2500;
+			unittalk .@kimi_id,"Grandpa ... love me ??";
+			sleep 2500;
+			unittalk .@celine_id,"Absolutely, Grandpa was so happy when he saw you become so lively.";
+			sleep 2500;
+			mapannounce .@map$,"Mysterious Voice : Grandpa died due to your shock appearance! The murderer is you, Kimi !",bc_map,0xFF0500;
+			sleep 1500;
+			unittalk .@kimi_id,"Kimi.... killed Grandpa ??";
+			sleep 2500;
+			unittalk .@celine_id,"No, they've misunderstanding about you. Grandpa already have the hidden disease long ago.";
+			sleep 2500;
+			unittalk .@kimi_id,"It was me ... who killed Grandpa ?";
+			sleep 2500;
+			mapannounce .@map$,"Mysterious Voice : Look at yourself, Kimi. Take a mirror and watch it through the mirror!!",bc_map,0xFF0500;
+			sleep 1500;
+			unittalk .@kimi_id,"It was me ... !!";
+			sleep 2500;
+			mapannounce .@map$,"Mysterious Voice : Your look so scary, nobody like you, Kimi!",bc_map,0xFF0500;
+			sleep 1500;
+			specialeffect EF_BIG_PORTAL2,AREA,instance_npcname( "Celine Kimi#instance" );
+			unittalk .@kimi_id,"It's all my fault!!";
+			sleep 2500;
+			unittalk .@celine_id,"OMG! This is bad. Kimi is going to collapse. I can't just stand here and watch anymore!";
+			sleep 2500;
+			mapannounce .@map$,"Mysterious Voice : Rage! Collapse! Nobody will feel sad for you, Kimi!",bc_map,0xFF0500;
+			sleep 1500;
+			unittalk .@celine_id,"I can't just let the Factory close like this! I will find a way out. You too hurry out and get out of here.";
+			sleep 2500;
+			specialeffect EF_SUMMONSLAVE;
+			hideonnpc strnpcinfo(3);
+			sleep 3500;
+			donpcevent instance_npcname( "Celine Kimi#instance" )+"::OnStart";
+			'talking = 0;
+			end;
+		}
+		else {
+			mes "Okay. See ya.";
+		}
+	}
+	close;
+}
+
+
+1@xm_d,232,184,3	script	Celine Kimi#instance	10034,{
+	end;
+	
+	function	func_abs	{
+		.@value = getarg(0);
+		if ( .@value < 0 ) {
+			.@value = ( .@value * -1 );
+		}
+		return .@value;
+	}
+	
+	function	func_min	{
+		.@value1 = getarg( 0,0 );
+		.@value2 = getarg( 1,0 );
+		if ( .@value1 < .@value2 )
+			.@return = .@value1;
+		else if ( .@value2 < .@value1 )
+			.@return = .@value2;
+		else 
+			.@return = rand( .@value1,.@value2 );
+		return .@return;
+	}
+	
+	OnStart:
+		.@map$ = strnpcinfo(4);
+		.@npc_name$ = strnpcinfo(3);
+		
+		specialeffect EF_SUMMONSLAVE;
+		hideonnpc .@npc_name$;
+		monster( .@map$,222,184,"Celine Kimi",2996,1,.@npc_name$+"::OnKillReal" );
+		'kimi_real = $@mobid[0];
+		monster( .@map$,232,184,"Phantom Celine Kimi",2997,1,.@npc_name$+"::OnKillFake" );
+		'kimi_fake = $@mobid[0];
+		initnpctimer;
+		end;
+		
+	OnKillReal:
+		'part = 6;
+		'kimi_real = 0;
+		.@map$ = strcharinfo(3);
+		.@npc_name$ = strnpcinfo(3);
+		mapannounce .@map$,"Celine : I found an exit at the South Part of Factory, Hurry Up and come to me!",bc_map,0xFF0500;
+		enablenpc instance_npcname( "Zone Portal#final" );
+		hideoffnpc instance_npcname( "Celine#zone4" );
+		killmonster .@map$,.@npc_name$+"::OnKillFake";
+		sleep 2500;
+		
+		for ( .@i = 1; .@i <= 10; .@i++ ) {
+			hideoffnpc instance_npcname( "Wrapped Gift Box#kimi_"+.@i );
+		}
+		end;
+		
+	OnKillFake:
+		.@map$ = strcharinfo(3);
+		.@npc_name$ = strnpcinfo(3);
+		'kimi_fake = 0;
+		
+		getunitdata( 'kimi_real,.@array1 );
+		.@celine_max_hp = .@array1[UMOB_HP];
+		// .@celine_max_hp = getmonsterinfo( 2996,MOB_MAXHP );
+		.@percent_hp = ( .@celine_max_hp / 10 );
+		
+		if ( .@hp_kimi_real >= .@percent_hp ) {
+			// unitskilluseid 'kimi_real,NPC_INVINCIBLE,1;
+			unitskilluseid 'kimi_real,685,1;
+			mapannounce .@map$,"Phantom Celine Kimi : You wont be able to kill me! I will alway come back to life! Hahaha!",bc_map,0xFF0500;
+			sleep 15000;
+			monster( .@map$,232,184,"Phantom Celine Kimi",2997,1,.@npc_name$+"::OnKillFake" );
+			'kimi_fake = $@mobid[0];
+			// unitskilluseid 'kimi_real,NPC_INVINCIBLEOFF,1;
+			unitskilluseid 'kimi_real,686,1;
+			initnpctimer;
+		}
+		end;
+		
+	OnTimer30000:
+		if ( 'kimi_real > 0 ) {
+		
+			.@map$ = strnpcinfo(4);
+			
+			getunitdata( 'kimi_real,.@array1 );
+			getunitdata( 'kimi_fake,.@array2 );
+				
+			.@hp_kimi_real = .@array1[UMOB_HP];
+			
+			if ( 'kimi_fake > 0 ) {
+				.@hp_kimi_fake = .@array2[UMOB_HP];
+				
+				// 20% hp
+				.@celine_max_hp = getmonsterinfo( 2996,MOB_MAXHP );
+				.@percent_hp = ( .@celine_max_hp / 5 );
+				
+				.@diff = func_abs( .@hp_kimi_real - .@hp_kimi_fake );
+					
+				.@x_kimi_real = .@array1[UMOB_X];
+				.@y_kimi_real = .@array1[UMOB_Y];
+				.@x_kimi_fake = .@array2[UMOB_X];
+				.@y_kimi_fake = .@array2[UMOB_Y];
+				
+				// unitskilluseid 'kimi_real,NPC_INVINCIBLEOFF,1;
+				unitskilluseid 'kimi_real,686,1;
+				if ( distance( .@x_kimi_real,.@y_kimi_real,.@x_kimi_fake,.@y_kimi_fake ) >= 8 ) {
+					if ( rand(2) ) {
+						unittalk F_Rand( 'kimi_real,'kimi_fake ),"You can't defeat us!";
+						// unitskilluseid 'kimi_real,NPC_INVINCIBLE,1;
+						unitskilluseid 'kimi_real,685,1;
+					}
+					else {
+						unitwarp 'kimi_fake,.@map$,.@x_kimi_real,.@y_kimi_real;
+						unittalk F_Rand( 'kimi_real,'kimi_fake ),"You're unable to separate us!";
+					}
+				}
+				else if ( .@diff >= .@percent_hp && !rand(2) ) {
+					.@random = rand( .@celine_max_hp );
+					
+					setunitdata( 'kimi_real,UMOB_HP,func_min( ( .@hp_kimi_real + .@random ),.@celine_max_hp ) );
+					setunitdata( 'kimi_fake,UMOB_HP,func_min( ( .@hp_kimi_fake + .@random ),.@celine_max_hp ) );
+					
+					for ( .@i = 1; .@i <= 6; .@i++ ) 
+						donpcevent instance_npcname( "#kimi_heal_eff_"+.@i )+"::OnEffect";
+						
+					mapannounce .@map$,"Phantom Celine Kimi recovered itself and it's Master HP by "+F_InsertComma( .@random )+"  !!",bc_map,0xFF0500;
+					sleep 2500;
+					mapannounce .@map$,"Don't let the HP Gap between Celine Kimi and it's Phantom become too big !!",bc_map,0x777777;
+					sleep 5000;
+				}
+			}
+			setnpctimer 0;
+		}
+		end;
+	
+}
+
+
+1@xm_d,220,193,4	script	#kimi_heal_eff_1	139,{
+	end;
+
+	OnEffect:
+		specialeffect EF_HEARTCASTING;
+		end;
+}
+1@xm_d,220,185,4	duplicate(#kimi_heal_eff_1)	#kimi_heal_eff_2	139
+1@xm_d,220,177,4	duplicate(#kimi_heal_eff_1)	#kimi_heal_eff_3	139
+1@xm_d,230,193,4	duplicate(#kimi_heal_eff_1)	#kimi_heal_eff_4	139
+1@xm_d,230,185,4	duplicate(#kimi_heal_eff_1)	#kimi_heal_eff_5	139
+1@xm_d,230,177,4	duplicate(#kimi_heal_eff_1)	#kimi_heal_eff_6	139
+
+
+
+1@xm_d,202,156,4	script	Zone Portal#final	45,2,2,{
+	OnTouch:
+		warp strcharinfo(3),195,152;
+		end;
+	
+	OnInstanceInit:
+		disablenpc strnpcinfo(3);
+		end;
+	
+}
+
+
+1@xm_d,218,146,3	script	Celine#zone4	10032,{
+
+	if ( 'part != 6 || 'talking ) end;
+
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	
+	if ( !.@is_leader ) {
+		mes "I only talk to leader.";
+		close;
+	}
+	else {
+		if ( select( "Cancel","Continue" ) == 2 ) {
+			mes "Too bad we have failed to convince Kimi!";
+			npctalk "Too bad we have failed to convince Kimi!";
+			close2;
+			'talking = 1;
+			npctalk "";
+			detachrid;
+			npctalk "Who is behind the Mysterious Voice ? Why would he keep hurting Kimi ?";
+			sleep 2500;
+			npctalk "Could it be the curse of my appearance also related with the voice ?";
+			sleep 2500;
+			npctalk "However, this place is still full with nostalgic memories for Kimi ?";
+			sleep 2500;
+			npctalk "In order not to make Kimi disappointed again, I shall kept this for good ...";
+			sleep 2500;
+			npctalk "Luckily we manage to uncover thr truth behind ... ";
+			sleep 2500;
+			npctalk "I will now open the emergency exit for you. Follow me to enter the Portal! ";
+			sleep 2500;
+			hideoffnpc instance_npcname( "Emergency Exit#celine" );
+			//'talking = 0;
+			end;
+		}
+		else {
+			mes "Okay. See ya.";
+		}
+	}
+	close;	
+	
+	OnInstanceInit:
+		hideonnpc strnpcinfo(3);
+		end;
+}
+
+
+1@xm_d,218,152,4	script	Emergency Exit#celine	10007,{
+	mes "Do you want to exit ?";
+	if ( select( "Yes","Cancel" ) == 1 ) {
+		warp "xmas",236,302;
+	}	
+	else {
+		mes "Okay. See ya.";
+	}
+	close;
+	
+	OnInstanceInit:
+		hideonnpc strnpcinfo(3);
+		end;
+}
+
+
+
+
+1@xm_d,211,141,4	script	Wrapped Gift Box#1	10005,{
+	
+	if ( 'part != 6 ) end;
+	
+	switch ( atoi(strnpcinfo(2)) ) {
+		case 1:
+			.@coin_amount = rand( 4,8 );
+			.@item_id = F_Rand( 0,644,617,22534 );
+			break;
+		case 2:
+			.@coin_amount = rand( 3,7 );
+			.@item_id = F_Rand( 0,603,616,13442 );
+			break;
+		case 3:
+			.@coin_amount = rand( 2,6 );
+			.@item_id = F_Rand( 0,7229,12246,2486 );
+			break;
+		case 4:
+			.@coin_amount = rand( 4,8 );
+			.@item_id = F_Rand( 0,7228,617,22534 );
+			break;
+		case 5:
+			.@coin_amount = rand( 3,7 );
+			.@item_id = F_Rand( 0,644,616,2976 );
+			break;
+		case 6:
+			.@coin_amount = rand( 2,6 );
+			.@item_id = F_Rand( 0,603,12246,2977 );
+			break;
+		case 7:
+			.@coin_amount = rand( 4,8  );
+			.@item_id = F_Rand( 0,7229,617,22534 );
+			break;
+		case 8:
+			.@coin_amount = rand( 3,7 );
+			.@item_id = F_Rand( 0,7228,616,2978 );
+			break;
+		case 9:
+			.@coin_amount = rand( 2,6 );
+			.@item_id = F_Rand( 0,644,12246,18848);
+			break;
+		case 10:
+			.@coin_amount = rand( 2,6 );
+			.@item_id = F_Rand( 0,603,617,22534);
+			break;
+		default: 
+			dispbottom "Invalid box. "+strnpcinfo(2);
+			end;
+	}
+	
+	specialeffect EF_COIN;
+	getmapxy( .@map$,.@x,.@y,1 );
+	.@x1 = .@x - 1;
+	.@x2 = .@x + 1;
+	.@y1 = .@y - 1;
+	.@y2 = .@y + 1;
+	
+	if ( .@item_id )
+		makeitem .@item_id,1,.@map$,rand( .@x1,.@x2 ),rand( .@y1,.@y2 );
+	for ( .@i = 0; .@i < .@coin_amount; .@i++ ) {
+		makeitem 7642,1,.@map$,rand( .@x1,.@x2 ),rand( .@y1,.@y2 );
+	}
+	// end;
+	
+	OnInit:
+	OnInstanceInit:
+		hideonnpc strnpcinfo(3);
+		end;
+}
+
+
+1@xm_d,215,141,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#2	10005
+1@xm_d,219,141,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#3	10005
+1@xm_d,223,141,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#4	10005
+1@xm_d,227,141,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#5	10005
+
+1@xm_d,211,137,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#6	10005
+1@xm_d,215,137,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#7	10005
+1@xm_d,219,137,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#8	10005
+1@xm_d,223,137,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#9	10005
+1@xm_d,227,137,4	duplicate(Wrapped Gift Box#1)	Wrapped Gift Box#10	10005
+
+
+
+
+
+

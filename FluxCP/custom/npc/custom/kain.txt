@@ -1,0 +1,7 @@
+prontera,167,194,1	script	Deckkard Kain	121,{
+	mes "[Deckkard Kain]";
+	mes "Greetings...Stay awhile and listen!";
+	atcommand "@identifyall";
+	mes "All your items have been identified";
+	close;
+}	

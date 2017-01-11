@@ -1,0 +1,352 @@
+
+	function	script	epoch_time	{
+		.@time = getarg(0);
+		.@hour = ( .@time / 3600 );
+		.@min = ( .@time % 3600 ) / 60 ;
+		.@sec = ( ( .@time % 3600 ) % 60 ) % 60;
+		
+		return sprintf( "%02d:%02d:%02d",.@hour,.@min,.@sec );
+	}
+
+// instance
+
+
+lighthalzen,55,278,4	script	Wolfchev's Assistance	4_M_SCIENCE,{
+	doevent "wolfchev_lab_instance::OnTalk";
+}
+
+-	script	wolfchev_lab_instance	4_M_SAKRAYROYAL,{
+OnTalk:
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	.@has_instance = ( instance_mapname( .map$[0] ) != "" );
+	
+	mes "^0055FF[ "+.instance_name$+" ]^000000";
+	mes "^FF0000**S.O.S**^000000";
+	mes "My master Wolfchev did some research on Bio-Genetic, Human DNA & Monster DNA. However, some incident happened during the experiment is carry out.";
+	mes "He is trapped inside the Laboratory, can you rescue him ??";
+	next;
+	mes "^0055FF[ "+.instance_name$+" ]^000000";
+	// if ( getgmlevel() < 99 ) {
+		// mes "It's under maintenance, not available for short time.";
+		// close;
+	// }
+	setarray .@party_member,1,12;
+	mes "If you wish to join us...";
+	mes "Form a party with "+.@party_member[0]+" ~ "+.@party_member[1]+" members.";
+	if ( !.@party_id ) close;
+
+	next;
+	switch( select( 
+		( .@party_id && .@is_leader && !.@has_instance )?"Join Expedition":"",
+		( 0 && .@party_id && .@is_leader && .@has_instance )?"":"", // Enter Memorial Dungeon
+		( .@party_id && .@is_leader && .@has_instance )?"Give Up":"",
+		"Leave"
+	)) {
+		case 1:
+			getpartymember .@party_id,1;
+			getpartymember .@party_id,2;
+		
+			.@origin = getcharid(3);
+			.@time = gettimetick(2);
+			for ( .@i = 0; .@i < $@partymembercount; .@i++ )
+				if ( isloggedin( $@partymemberaid[.@i],$@partymembercid[.@i] ) ) 
+					if ( attachrid( $@partymemberaid[.@i] ) ) {
+						.@member_count++;
+						
+						if ( .delay_timer && .@time < instance_wolfchev_lab ) {
+							.@fail_type |= 1;
+							.@cooldown = ( instance_wolfchev_lab - .@time );
+						}
+						if ( Zeny < .zeny_cost ) .@fail_type |= 2;
+						
+						if ( .@fail_type ) {
+							.@name$ = strcharinfo(0);
+							break;
+						}
+					}
+			attachrid( .@origin );
+			
+			if ( .@name$ != "" ) {
+				next;
+				mes "^0055FF[ "+.instance_name$+" ]^000000";
+				mes "^0055FF"+.@name$+"^000000";
+				if ( .@fail_type & 1 ) mes "cooldown left "+epoch_time( .@cooldown );
+				if ( .@fail_type & 2 ) mes "not enough zeny.";
+				break;
+			}
+			
+			if( .@member_count < .@party_member[0] || .@member_count > .@party_member[1] ){
+				break;
+			}
+			else {
+				.@instance = instance_create( .instance_name$ );
+				if( .@instance < 0 ) {
+					npctalk "Memorial Dungeon reservation failed.";
+					mes "^0000FF"+.instance_name$+" ^000000- Reservation Failed!";
+					close;
+				}
+				mes "^0000FF"+.instance_name$+" ^000000 - Reserved";
+				npctalk "Memorial Dungeon has been generated for Party - "+getpartyname( .@party_id );
+				getpartymember .@party_id,2;
+				for( .@i = 0; .@i < $@partymembercount; .@i++ )
+					if( attachrid( $@partymemberaid[.@i] ) ) {
+						Zeny -= .zeny_cost;
+						callsub( L_enter );
+					}
+				break;
+			}
+		case 2:
+			if( instance_mapname( .map$[0] ) == "" ){
+				npctalk "Memorial Dungeon doesnt exist for Party - "+getpartyname( .@party_id );
+			}
+			else{
+			
+				getpartymember .@party_id,1;
+				getpartymember .@party_id,2;
+				for( .@i = 0; .@i < $@partymembercount; .@i++ )
+					if ( isloggedin( $@partymemberaid[.@i],$@partymembercid[.@i] ) ) 
+						if( attachrid( $@partymemberaid[.@i] ) ) {
+							callsub( L_enter );
+						}
+				detachrid;
+			}
+			break;
+		case 3:
+			mes "Memorial Dungeon Destroyed.";
+			instance_destroy instance_id();
+			break;
+		default: 
+			// mes "This is a Memorial Dungeon.";
+			break;
+	}
+	close;
+	
+	L_enter:
+		.@ins = instance_enter( .instance_name$ );
+		switch ( .@ins ) {
+			case 0: 
+				instance_wolfchev_lab = gettimetick(2) + .delay_timer;
+				break;
+			case 1:
+				mes "You can enter the dungeon after making the party.";
+				close;
+			case 2:
+				mes "The memorial dungeon Endless Tower does not exist.";
+				mes "The party leader did not generate the dungeon yet.";
+				close;
+			case 3:
+				mes "An unknown error has occurred.";
+				close;
+		}
+		return;
+
+	OnInit:
+		// delay in second
+		// .delay_timer = ( 3600 * 23 );
+		// .zeny cost
+		// .zeny_cost = 1000000;
+		// name of Instance
+		.instance_name$ = "Wolfchev's Mini Laboratory";
+		
+		// instance map lists
+		setarray .map$,
+			"2@lhz";
+
+		.map_size = getarraysize( .map$ );
+		end;
+}
+
+
+
+
+2@lhz,1,1,4	script	wolfchev_warp	HIDDEN_NPC,{
+end;
+
+OnTouch_:
+	.@map$ = strnpcinfo(4);
+	// if( mobcount( .@map$,"all" ) ){
+		// mes "Some force blocked the Door from being enter by any players. Probably caused by the nearby ^FF0000Experimental Monsters^000000";
+		// close;
+	// }
+	// else{
+		switch( atoi( strnpcinfo(2) ) ){
+			default:
+				message strcharinfo(0),"Malfunction Warp Portal.Report to Admin. [Code:"+strnpcinfo(2)+"]";
+				end;
+			case 1: warp .@map$,45,83; break;
+			case 2: warp .@map$,83,24; break;
+			case 3: warp .@map$,152,27; break;
+			case 4: warp .@map$,137,95; break;
+		}
+	// }
+	end;
+}
+
+2@lhz,45,172,4	duplicate(wolfchev_warp)	wolfchev_warp#1	WARPNPC,2,2
+2@lhz,45,120,4	duplicate(wolfchev_warp)	wolfchev_warp#2	WARPNPC,2,2
+2@lhz,84,62,4	duplicate(wolfchev_warp)	wolfchev_warp#3	WARPNPC,2,2
+2@lhz,152,64,4	duplicate(wolfchev_warp)	wolfchev_warp#4	WARPNPC,2,2
+
+
+
+
+
+2@lhz,1,1,4	script	wolfchev_laboratory	HIDDEN_NPC,{
+end;
+
+OnInstanceInit:
+	sleep 1000;
+	.@map$ = strnpcinfo(4);
+	setmapflag .@map$,mf_nomobloot;
+	setmapflag .@map$,mf_nomvploot;
+	for( .@i = 1; .@i <= 4; .@i++ )
+		disablenpc instance_npcname( "wolfchev_warp#"+.@i );
+	disablenpc instance_npcname( "Wolfchev the Scientist" );
+	'level = 0;
+	areamonster .@map$,38,158,53,169,"Starving Experimental Wolf",1432,25;
+	sleep 10000;
+	areamonster .@map$,38,158,53,169,"Bio-Genetic Wolf",1432,1,instance_npcname( strnpcinfo(0) )+"::OnMyMobDead",2,0;
+	end;
+	
+OnMyMobDead:
+	.@map$ = strnpcinfo(4);
+	.@npc_name$ = instance_npcname( strnpcinfo(0) );
+	'level++;	
+	if( 'level < 6 ) detachrid;
+	switch( 'level ){
+		case 1:
+			instance_announce -1,"<SYSTEM> Found 1x Experimental Specimen",bc_map;
+			sleep 3000;
+			enablenpc instance_npcname( "wolfchev_warp#"+'level );
+			instance_announce -1,"<SYSTEM> Entrance to next room unlocked.",bc_map;
+			sleep 5000;
+			instance_announce -1,"<SYSTEM> Monsters escaped from the Large Test Tube !!",bc_map;
+			areamonster .@map$,34,94,57,109,"Failure Experimental 1682",1682,30;
+			// sleep 10000;
+			areamonster .@map$,34,94,57,109,"Bio-Genetic 1681",1681,1,.@npc_name$+"::OnMyMobDead",2,0;
+			end;
+		case 2:		
+			instance_announce -1,"<SYSTEM> Found 1x Experimental Specimen",bc_map;
+			sleep 3000;
+			enablenpc instance_npcname( "wolfchev_warp#"+'level );
+			instance_announce -1,"<SYSTEM> Entrance to next room unlocked.",bc_map;
+			sleep 5000;
+			instance_announce -1,"<SYSTEM> Monsters escaped from the Large Test Tube !!",bc_map;
+			for( .@i = 0; .@i < 20; .@i++ )
+				areamonster .@map$,72,36,96,55,"Experimental Human",rand( 1652,1657 ),1;
+			// sleep 10000;
+			instance_announce -1,"<SYSTEM> Something dangerous Appeared. What's it?",bc_map;
+			areamonster .@map$,72,36,96,55,"Experimental Human",rand( 1634,1639 ),1,.@npc_name$+"::OnMyMobDead",2,0;
+			end;	
+		case 3:
+			instance_announce -1,"<SYSTEM> Found 1x Experimental Specimen",bc_map;
+			sleep 3000;
+			enablenpc instance_npcname( "wolfchev_warp#"+'level );
+			instance_announce -1,"<SYSTEM> Entrance to next room unlocked.",bc_map;
+			sleep 5000;
+			instance_announce -1,"<SYSTEM> It look like we're getting near to the main laboratory area !!",bc_map;
+			sleep 5000;
+			instance_announce -1,"<SYSTEM> The atmosphere here is ... extremely unusual, something bad gonna happen?? Something dangerous !!",bc_map;
+			for( .@i = 0; .@i < 10; .@i++ ){
+				areamonster .@map$,140,38,163,57,"Experimental Human",rand( 1634,1639 ),1;
+				sleep 1000;
+			}
+			// sleep 10000;
+			areamonster .@map$,140,38,163,57,"Experimental Human",rand( 1634,1639 ),1,.@npc_name$+"::OnMyMobDead",2,0;
+			end;	
+		case 4:
+			instance_announce -1,"<SYSTEM> Found 1x Experimental Specimen",bc_map;
+			sleep 3000;
+			enablenpc instance_npcname( "wolfchev_warp#"+'level );
+			instance_announce -1,"<SYSTEM> Entrance to next room unlocked. Look like it's the place where Wolfchev located.",bc_map;
+			enablenpc instance_npcname( "Wolfchev the Scientist" );
+			end;
+		case 5: break;
+		case 6:
+			.@party_id = getcharid(1);
+			instance_announce -1,"<SYSTEM> You've defeated the escaped Bio-Genetic Human. Well Done!!",bc_map;
+			sleep2 3000;
+			if( getmobdrops( 'final_mob ) ){
+				.@drop_size = $@MobDrop_count;
+				copyarray .@drop_item[0],$@MobDrop_item[0],.@drop_size;
+				copyarray .@drop_rate[0],$@MobDrop_rate[0],.@drop_size;
+				
+				announce "<SYSTEM> "+getpartyname( getcharid(1) )+" defeated "+getmonsterinfo( 'final_mob,MOB_NAME )+" in the Memorial Dungeon. Congratulation!",bc_all;
+				
+				// random junk rewards
+				setarray .@junk,607,608;
+				setarray .@junk_qty,10,10;
+				
+				.@junk_size = getarraysize( .@junk );
+				.@mob_count = mobcount( .@map$,"all" );
+				for( .@i = 0; .@i < .@drop_size; .@i++ ){
+					.@temp_rate = rand( 10000 ) + ( .@mob_count * 100 );
+					if( .@temp_rate <= .@drop_rate[.@i] ){
+						instance_announce -1,"<SYSTEM> Drops : 1x "+getitemname( .@drop_item[.@i] ),bc_map|bc_blue;
+						makeitem .@drop_item[.@i],1,.@map$,rand( 125,150 ),rand( 127,141 );
+					}
+					.@rand = rand( .@junk_size );
+					makeitem .@junk[ .@rand ],rand( 1,.@junk_qty[ .@rand ] ),.@map$,rand( 125,150 ),rand( 127,141 );
+					sleep 100;
+				}
+				'level = 7;
+				hideoffnpc instance_npcname( "Wolfchev the Scientist" );
+				sleep 10000;
+				instance_announce -1,"<SYSTEM> Laboratory is collapsing, hurry up and get out.",bc_map|bc_blue;
+				sleep 50000;
+				instance_announce -1,"<SYSTEM> Laboratory is collapsing, hurry up and get out.",bc_map|bc_blue;
+				sleep 10000;
+				instance_destroy;
+			}
+			break;
+	}
+	end;
+
+}
+
+
+2@lhz,138,134,4	script	Wolfchev the Scientist	4_M_MUT1,{
+	if( 'level > 6 ){
+		mes "You did a great job.";
+		close2;
+		warp "lighthalzen",54,274;
+	}
+	else if( 'level == 4 ){
+		'level++;
+		donpcevent instance_npcname( strnpcinfo(0) )+"::OnNPCTalk";
+	}
+	end;
+
+OnNPCTalk:
+	setarray .@msg$,
+		"Seem like all of your manage to reach this stage. Yet you've collected all the specimens.",
+		"However, it's too late. Some accident happened, and my body has become like this because of these specimens DNA.",
+		"I dont think I am gonna make it in time. I know my conditions about.",
+		"But ... there are something else you should worry now...",
+		"There is one creature escaped during the accident, it's extremely dangerous.",
+		"You all must stop him from escaping this laboratory. It would be end of the human race.",
+		"It's way stronger,faster,and highly intelligent.",
+		"You all must not underestimate it. It could have growth to much stronger by now.",
+		"Make sure you take it down. No matter what it cost !!",
+		"Do not let it escape!! Promise me...",
+		"Urgghhh...My body .....",
+		"Daammnn...I've never wanted like this...Tell my assistance that I'm sorry for everything...",
+		"Remember ... the Creature!! Dont let....(*unable to speak*)";
+	specialeffect EF_MAP_MAGICZONE3;
+	.@msg_size = getarraysize( .@msg$ );
+	for( .@i = 0; .@i < .@msg_size; .@i++ ){
+		npctalk ""+.@msg$[.@i];
+		// sleep rand( 5000,7500 );
+		sleep 2500;
+	}
+	specialeffect EF_SUI_EXPLOSION;
+	specialeffect EF_BLEEDING;
+	
+	hideonnpc instance_npcname( strnpcinfo(0) );
+	'final_mob = rand( 1646,1651 );
+	areamonster strnpcinfo(4),122,120,155,145,"Bio-Genetic Human",'final_mob,1,instance_npcname( "wolfchev_laboratory" )+"::OnMyMobDead",2,0;
+	end;
+	
+}
+

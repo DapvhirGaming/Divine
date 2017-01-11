@@ -1,0 +1,36 @@
+Thank your all who contributed to Thor Patcher!
+
+[Order by post date DESC]
+===========================================
+o ChronoSphere [Bug report, Answer question]
+o Leky [Bug report]
+o jayz13 [Bug report, Answer question]
+o VodkaMartini [Indonesian translation]
+o Dark_Silence [Answer question]
+o skankilson [Feature request]
+o Reanimation [Bug report]
+o xazax [Feature request]
+o Elixir [Feature request]
+o Brainstorm [Feature request]
+o Taikumi [Feature request]
+o Filgaja [Bug report, Feature request]
+o Daisetsu [Feature request,Bug report, Answer question]
+o NLZ [Feature request]
+o Vedurin [Feature request]
+o Lazarus^ [Feature request,Bug report]
+o Vedurin [Feature request]
+o Banjee [Bug report]
+o henrikejg [Feature request]
+o jb7038 [Feature request]
+o henrikejg [Feature request]
+o Rikter [Bug report]
+===========================================
+
+Please let me know if I'm missing anyone.
+
+
+Servers:
+----------------
+OceanRO [Made possible for Thor Patcher to exists]
+NaRO [First server that tests Thor Patcher]
+----------------

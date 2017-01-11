@@ -1,0 +1,8 @@
+prontera,155,177,1	script	Tell Me	725,{
+	message "[Tell Me]";
+	message "Class: " + Class;
+	message "BaseClass: " + BaseClass;
+	message "BaseJob: " + BaseJob;
+	message "Upper: " + Upper;
+	break;
+}

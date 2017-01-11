@@ -1,0 +1,975 @@
+//===== rAthena Script ============================================================
+//= Faceworm Nest
+//===== By:========================================================================
+//= Emistry
+//===== Start Date:================================================================
+//= 
+//===== Current Version:===========================================================
+//= 1.0
+//===== Compatible With:===========================================================
+//= rAthena SVN
+//===== Description:===============================================================
+//= Faceworm instance.
+//===== Version Control:===========================================================
+//= 1.0 First Version.
+//===== Additional Comments:=======================================================
+//= 
+//=================================================================================
+
+
+/* instance_db.txt
+
+105,Faceworm Nest,3600,1@face,112,369,1@face
+*/
+
+function	script	epoch_time	{
+	.@time=getarg(0);
+	.@hour=(.@time/3600);
+	.@min=(.@time%3600)/60 ;
+	.@sec=((.@time%3600)%60)%60;
+	return sprintf("%02d:%02d:%02d",.@hour,.@min,.@sec);
+}
+
+function	script	npc_talk	{
+	.@argcount=getargcount();
+	.@npc_name$=strnpcinfo(1);
+	for(.@i=0; .@i < .@argcount; .@i++) {
+		mes "^0055FF[ "+.@npc_name$+" ]^000000";
+		.@message$=getarg(.@i);
+		mes .@message$;
+		npctalk .@message$;
+		// next;
+	}
+	return;
+}
+
+
+// Mapflag
+1@face	mapflag	nocommand	10
+1@face	mapflag	nosave
+
+dali,81,59,3	script	Faceworm Expedition#vkro	4_M_DST_GRAND,{
+	doevent "faceworm_nest::OnTalk";
+}
+
+-	script	faceworm_nest	-1,{
+OnTalk:
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	.@has_instance = ( instance_mapname(.map$[0]) != "" );
+	
+	mes "^0055FF["+.instance_name$+"]^000000";
+	mes "Recently, I received several reports that Faceworms appeared in Payon Fields and are attacking adventures.";
+	next;
+	mes "^0055FF["+.instance_name$+"]^000000";
+	mes "The situation is dangerous so were trying to take it down before it harms anymore adventures.";
+	next;
+	mes "^0055FF["+.instance_name$+"]^000000";
+	mes "Would you like to join the expedition with us? We're looking for strong people like you.";
+	next;
+	mes "^0055FF["+.instance_name$+"]^000000";
+	//if(getgmlevel() < 99) { mes "It's under maintenance, not available for short time."; close; }
+	setarray .@party_member,1,12;
+	mes "If you wish to join us...";
+	mes "Form a party with "+.@party_member[0]+" ~ "+.@party_member[1]+" members.";
+	if(!.@party_id) close;
+	next;
+	switch(select(
+		(.@party_id && .@is_leader && !.@has_instance)?"Join Expedition":"",
+		(0 && .@party_id && .@is_leader && .@has_instance)?"":"", // Enter Memorial Dungeon
+		(.@party_id && .@is_leader && .@has_instance)?"Give Up":"",
+		"Leave"
+	)) {
+		case 1:
+			getpartymember .@party_id,1;
+			getpartymember .@party_id,2;
+			.@origin = getcharid(3);
+			.@time = gettimetick(2);
+			for(.@i = 0; .@i < $@partymembercount; .@i++)
+				if(isloggedin($@partymemberaid[.@i],$@partymembercid[.@i])) 
+					if(attachrid($@partymemberaid[.@i])) {
+						.@member_count++;
+						if(.delay_timer && .@time < instance_faceworm) { 
+							.@fail_type |=  1;
+							.@cooldown = ( instance_faceworm - .@time ); 
+						}
+						if(Zeny < .zeny_cost) { 
+							.@fail_type |=  2; 
+						}
+						if(.@fail_type) {
+							.@name$ = strcharinfo(0); 
+							break; 
+						}
+					}
+			attachrid(.@origin);
+			
+			if(.@name$ != "") {
+				next;
+				mes "^0055FF["+.instance_name$+"]^000000";
+				mes "^0055FF"+.@name$+"^000000";
+				if(.@fail_type & 1) 
+					mes "cooldown left "+epoch_time(.@cooldown);
+				if(.@fail_type & 2)
+					mes "not enough zeny.";
+				break;
+			}
+			if(.@member_count < .@party_member[0] || .@member_count > .@party_member[1]) { 
+				break; 
+			}
+			else {
+				.@instance = instance_create(.instance_name$);
+				if(.@instance < 0) { npctalk "Memorial Dungeon reservation failed."; mes "^0000FF"+.instance_name$+" ^000000- Reservation Failed!"; close; }
+				mes "^0000FF"+.instance_name$+" ^000000 - Reserved";
+				npctalk "Memorial Dungeon has been generated for Party - "+getpartyname(.@party_id);
+				getpartymember .@party_id,2;
+				for(.@i = 0; .@i < $@partymembercount; .@i++)
+					if(isloggedin($@partymemberaid[.@i],$@partymembercid[.@i])) 
+						if(attachrid($@partymemberaid[.@i])) {
+							Zeny -=  .zeny_cost;
+							callsub(L_enter);
+						}
+				break;
+			}
+		case 2:
+			if(instance_mapname(.map$[0]) == "") { npctalk "Memorial Dungeon doesnt exist for Party - "+getpartyname(.@party_id); }
+			else{
+				getpartymember .@party_id,1;
+				getpartymember .@party_id,2;
+				for(.@i = 0; .@i < $@partymembercount; .@i++)
+					if(isloggedin($@partymemberaid[.@i],$@partymembercid[.@i])) 
+						if(attachrid($@partymemberaid[.@i])) {
+							callsub(L_enter);
+						}
+				detachrid;
+			}
+			break;
+		case 3:
+			mes "Memorial Dungeon Destroyed.";
+			instance_destroy instance_id();
+			break;
+		default: 
+			// mes "This is a Memorial Dungeon.";
+			break;
+	}
+	close;
+	
+	L_enter:
+		.@ins = instance_enter(.instance_name$);
+		switch(.@ins) {
+			case 0: instance_faceworm = gettimetick(2) + .delay_timer; break;
+			case 1: mes "You can enter the dungeon after making the party."; close;
+			case 2: mes "The memorial dungeon "+.instance_name$+" does not exist."; mes "The party leader did not generate the dungeon yet."; close;
+			case 3: mes "An unknown error has occurred."; close;
+		}
+		return;
+
+	OnInit:
+		// delay in second
+		.delay_timer = (3600 * 24);
+		.delay_timer = 0;
+		// .zeny cost
+		// .zeny_cost = 1000000;
+		// name of Instance
+		.instance_name$ = "Faceworm Nest";
+		// instance map lists
+		setarray .map$,"1@face";
+		.map_size = getarraysize(.map$);
+		
+		// currently you're required to disable this setting
+		// so that the Faceworm will not gain infinity HP when they metamorphosis into another element.
+		setbattleflag "monster_class_change_full_recover",0;
+		end;
+}
+
+1@face,150,92,0	warp	faceworm_instance_warp_1	2,5,1@face,128,87
+1@face,139,99,0	warp	faceworm_instance_warp_2	2,5,1@face,151,108
+1@face,248,186,0	warp	faceworm_instance_warp_3	2,5,1@face,260,174
+1@face,204,122,0	warp	faceworm_instance_warp_4	2,5,1@face,208,146
+
+1@face,214,165,4	script	Transport Device#fexit	PORTAL,{
+	warp "dali",82,62;
+	end;
+}
+
+
+1@face,1,1,4	script	faceworm_nest_instance	-1,{
+
+	OnInstanceInit:
+		sleep 500;
+		.@npc_name$ = strnpcinfo(3);
+
+		.@map$ = strnpcinfo(4);
+		setmapflag .@map$,mf_nomvploot;
+		setmapflag .@map$,mf_nomobloot;
+		'ladder_level = 0;
+		'talking = 1;
+		
+		donpcevent instance_npcname( "Chaos#faceworm" )+"::OnEnable";
+		donpcevent instance_npcname( "Iris#faceworm" )+"::OnEnable";
+		
+		// warp portal
+		for ( .@i = 1; .@i <= 4; .@i++ )
+			disablenpc instance_npcname( "faceworm_instance_warp_"+.@i );
+		disablenpc instance_npcname("Transport Device#fexit");
+		end;
+		
+	OnStart1:
+		.@map$ = strnpcinfo(4);
+		.@map_user = getmapusers( .@map$ );
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+
+		.@mobcount = ( ( 21 + ( 11 * .@map_user ) ) / 6 );
+		areamonster .@map$,43,35,90,336,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd1";
+		areamonster .@map$,43,35,90,336,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd1";
+		areamonster .@map$,43,35,90,336,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd1";
+		areamonster .@map$,43,35,90,336,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd1";
+		areamonster .@map$,43,35,90,336,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd1";
+		areamonster .@map$,43,35,90,336,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd1";
+		
+		// random monsters spawn across the map.
+		monster .@map$,0,0,"--ja--",1494,30;
+		monster .@map$,0,0,"--ja--",1166,30;
+		monster .@map$,0,0,"--ja--",1277,30;
+		
+		// randomize trap location
+		for ( .@i = 0; .@i <= 30; .@i++ )
+			donpcevent instance_npcname( sprintf("#faceworm_dirt_patch_%02d",.@i ) )+"::OnAllocate";
+
+		initnpctimer .@npc_name$;
+		end;
+		
+	OnStart2:
+		.@map$ = strnpcinfo(4);
+		.@map_user = getmapusers( .@map$ );
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		
+		.@mobcount = ( ( 21 + ( 11 * .@map_user ) ) / 5 );
+		areamonster .@map$,100,113,122,148,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd2";
+		areamonster .@map$,107,160,127,300,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd2";
+		areamonster .@map$,107,233,200,291,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd2";
+		areamonster .@map$,107,233,200,291,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd2";
+		areamonster .@map$,107,233,200,291,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd2";
+		initnpctimer .@npc_name$;
+		end;
+		
+	OnStart3:
+		.@map$ = strnpcinfo(4);
+		.@map_user = getmapusers( .@map$ );
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+
+		.@mobcount = ( ( 21 + ( 11 * .@map_user ) ) / 4 );
+		areamonster .@map$,152,126,176,178,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd3";
+		areamonster .@map$,150,183,266,219,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd3";
+		areamonster .@map$,231,213,259,342,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd3";
+		areamonster .@map$,229,256,320,342,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd3";
+		initnpctimer .@npc_name$;
+		end;
+		
+	OnStart4:
+		.@map$ = strnpcinfo(4);
+		.@map_user = getmapusers( .@map$ );
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+
+		.@mobcount = ( ( 21 + ( 11 * .@map_user ) ) / 2 );
+		areamonster .@map$,220,67,322,117,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd4";
+		areamonster .@map$,254,54,320,154,"--ja--",2528,.@mobcount,.@npc_name$+"::OnEnd4";
+		initnpctimer .@npc_name$;
+		end;
+		
+	OnStart5:
+		.@map$ = strnpcinfo(4);
+		.@map_user = getmapusers( .@map$ );
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		
+			sleep 3000;
+			mapannounce .@map$,"Something huge is approaching inside the Cave!!",bc_map;
+			sleep 3000;
+			mapannounce .@map$,"This doesn't look good!! Run now while you still have the chances.",bc_map;
+			
+		if ( !mobcount( .@map$,.@npc_name$+"::OnEnd5" ) ) {
+			monster( .@map$,213,156,"--ja--",2529,1,.@npc_name$+"::OnEnd5" );
+			'boss_gid = $@mobid[0];
+			.@hp = ( getmonsterinfo( 2529,MOB_MAXHP ) + ( 2000000 * .@map_user ) );
+			if ( .@hp > 50000000 );
+				.@hp = 50000000;
+				
+			setunitdata 'boss_gid,UMOB_HP,.@hp;
+			setunitdata 'boss_gid,UMOB_MAXHP,.@hp;
+			
+			mapannounce .@map$,"Faceworm Queen has appeared!!",bc_map;
+			initnpctimer .@npc_name$;
+			// initnpctimer;
+		}
+		end;
+	
+	// OnTimer60000:
+		// .@map$ = strnpcinfo(4);
+		// .@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		
+		// .@max_hp = getmonsterinfo( FACEWORM_QUEEN,MOB_MAXHP );
+		// .@hp = getmobdata( 'boss_gid,2 );
+		// .@x = getmobdata( 'boss_gid,6 );
+		// .@y = getmobdata( 'boss_gid,7 );
+		
+		// .@element = rand( FACEWORM_QUEEN_R,FACEWORM_QUEEN_Y );
+		
+		// TODO: required mob controller script commands or other alternatives workaround.
+		// 'boss_gid = monster( .@map$,.@x,.@y,"--ja--",.@element,1,.@npc_name$+"::OnEnd5" );
+		// setmobdata( 'boss_gid,2,.@hp  );
+		
+		// initnpctimer;
+		// switch ( .@element ) {
+			// case FACEWORM_QUEEN_R:
+				// mapannounce .@map$,"Faceworm Queen changed to Fire element!",bc_map;
+				// break;
+			// case FACEWORM_QUEEN_G:
+				// mapannounce .@map$,"Faceworm Queen changed to Earth element!",bc_map;
+				// break;
+			// case FACEWORM_QUEEN_B:
+				// mapannounce .@map$,"Faceworm Queen changed to Water element!",bc_map;
+				// break;
+			// case FACEWORM_QUEEN_Y:
+				// mapannounce .@map$,"Faceworm Queen changed to Wind element!",bc_map;
+				// break;
+		// }
+		// end;
+}
+
+
+1@face,161,132,4	script	#faceworm_trap	HIDDEN_WARP_NPC,3,3,{
+	OnTouch_:
+		.@size = 20;
+		getmapxy( .@map$,.@x,.@y,1 );
+		.@x1 = .@x - .@size;
+		.@y1 = .@y - .@size;
+		.@x2 = .@x + .@size;
+		.@y2 = .@y + .@size;
+		areamonster .@map$,.@x1,.@y1,.@x2,.@y2,"--ja--",2531,10;
+		end;
+}
+
+1@face,167,148,4	duplicate(#faceworm_trap)	#faceworm_trap_01	HIDDEN_WARP_NPC,3,3
+1@face,165,165,4	duplicate(#faceworm_trap)	#faceworm_trap_02	HIDDEN_WARP_NPC,3,3
+1@face,177,189,4	duplicate(#faceworm_trap)	#faceworm_trap_03	HIDDEN_WARP_NPC,3,3
+1@face,181,198,4	duplicate(#faceworm_trap)	#faceworm_trap_04	HIDDEN_WARP_NPC,3,3
+1@face,195,200,4	duplicate(#faceworm_trap)	#faceworm_trap_05	HIDDEN_WARP_NPC,3,3
+1@face,205,202,4	duplicate(#faceworm_trap)	#faceworm_trap_06	HIDDEN_WARP_NPC,3,3
+1@face,215,205,4	duplicate(#faceworm_trap)	#faceworm_trap_07	HIDDEN_WARP_NPC,3,3
+1@face,242,225,4	duplicate(#faceworm_trap)	#faceworm_trap_08	HIDDEN_WARP_NPC,3,3
+1@face,243,241,4	duplicate(#faceworm_trap)	#faceworm_trap_09	HIDDEN_WARP_NPC,3,3
+1@face,242,273,4	duplicate(#faceworm_trap)	#faceworm_trap_10	HIDDEN_WARP_NPC,3,3
+1@face,241,283,4	duplicate(#faceworm_trap)	#faceworm_trap_11	HIDDEN_WARP_NPC,3,3
+1@face,275,316,4	duplicate(#faceworm_trap)	#faceworm_trap_12	HIDDEN_WARP_NPC,3,3
+1@face,269,291,4	duplicate(#faceworm_trap)	#faceworm_trap_13	HIDDEN_WARP_NPC,3,3
+1@face,269,291,4	duplicate(#faceworm_trap)	#faceworm_trap_14	HIDDEN_WARP_NPC,3,3
+
+
+1@face,1,1,4	script	#faceworm_dirt_patch_00	4_SOIL,2,2,{
+	OnTouch_:
+		.@size = 3;
+		getmapxy( .@map$,.@x,.@y,1 );
+		.@x1 = .@x - .@size;
+		.@y1 = .@y - .@size;
+		.@x2 = .@x + .@size;
+		.@y2 = .@y + .@size;
+		areamonster .@map$,.@x1,.@y1,.@x2,.@y2,"--ja--",2541,3;
+		// end;
+		
+	OnAllocate:
+		getmapxy( .@map$,.@x,.@y,1 );
+		do {
+			.@x = rand( 1,400 );
+			.@y = rand( 1,400 );
+		} while ( !checkcell( .@map$,.@x,.@y,cell_chkpass ) );
+		movenpc strnpcinfo(3),.@x,.@y;
+		end;
+}
+
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_01	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_02	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_03	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_04	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_05	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_06	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_07	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_08	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_09	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_10	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_11	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_12	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_13	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_14	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_15	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_16	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_17	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_18	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_19	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_20	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_21	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_22	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_23	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_24	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_25	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_26	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_27	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_28	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_29	4_SOIL,2,2
+1@face,1,1,4	duplicate(#faceworm_dirt_patch_00)	#faceworm_dirt_patch_30	4_SOIL,2,2
+
+
+1@face,1,1,4	script	Treasure#faceworm	4_TREASURE_BOX,{
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	.@item_count = ( 1 + ( 'ladder_level == 5 ) );
+	
+	if ( !.@is_leader || 'stage_time <= 0 ) end;
+	
+	do {
+		.@item_count--;
+		switch ( 'ladder_level ) {
+			case 1:
+			case 2:
+			case 3:
+				.@timer = 121;
+				.@refine = rand( 0,6 );
+				setarray .@slot,0,
+					rand( 4853,4858 ),
+					4700 + ( rand( 6 ) * 10 ) + rand( 5 ),
+					4700 + ( rand( 6 ) * 10 ) + rand( 5 );
+			case 4:
+				.@timer = 111;
+				.@refine = rand( 0,6 );
+				setarray .@slot,0,
+					rand( 4853,4858 ),
+					4700 + ( rand( 6 ) * 10 ) + rand( 5 ),
+					4700 + ( rand( 6 ) * 10 ) + rand( 5 );
+				break;
+			case 5:
+				.@timer = 271;
+				.@refine = rand( 0,12 );
+				setarray .@slot,0,
+					rand( 4853,4858 ),
+					4700 + ( rand( 6 ) * 10 ) + rand( 7 ),
+					4700 + ( rand( 6 ) * 10 ) + rand( 7 );
+				break;
+			default:
+				break;
+		}
+		
+		.@item_id = ( ( 'ladder_level == 5 || rand(100) < 10 ) ? 20718 : 20717 );
+		
+		if ( 'stage_time >= .@timer ) {
+			deletearray .@slot;
+		}
+		else if ( 'ladder_level < 5 ) {
+			if ( rand(100) < 90 ) .@slot[3] = 0;
+			if ( rand(100) < 50 || !.@slot[3] ) .@slot[2] = 0;
+			if ( rand(100) < 90 || !.@slot[2] ) .@slot[1] = 0;
+		}
+		
+		// TODO: required *makeitem2
+		getitem2 .@item_id,1,0,.@refine,0,.@slot[0],.@slot[1],.@slot[2],.@slot[3];
+		
+		message strcharinfo(0),"Reward : +"+.@refine+" "+getitemname( .@item_id );
+		
+	} while ( .@item_count > 0 );
+	
+OnDisable:
+	.@npc_name$ = strnpcinfo(3);
+	hideonnpc .@npc_name$;
+	movenpc .@npc_name$,1,1;
+	end;
+		
+OnInit:
+OnEnable:
+	.@npc_name$ = strnpcinfo(3);
+	hideoffnpc .@npc_name$;
+	end;
+		
+OnBossKill:
+	.@map$ = strnpcinfo(4);
+	.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+
+	killmonster .@map$,"All";
+	if ('ladder_level <= 4) {
+		if ('ladder_level == 3)
+			mapannounce .@map$,"I heard some weird rock cracking sound near the walls. It must be a hidden tunnel to the Hive!",bc_map;
+		.@timer = getnpctimer(0) / 1000;
+		announce "Stage "+ ('ladder_level+1) +": Completed in "+callfunc("epoch_time", .@timer ),bc_map;
+		'stage_time = .@timer;
+		stopnpctimer;
+	}
+	switch('ladder_level) {
+		case 0:
+			movenpc .@npc_name$,149,77;
+			break;
+		case 1:
+			movenpc .@npc_name$,164,273;
+			break;
+		case 2:
+			movenpc .@npc_name$,274,314;
+			break;
+		case 3:
+			movenpc .@npc_name$,214,105;
+			break;
+	}
+	hideoffnpc .@npc_name$;
+	'ladder_level++;
+	donpcevent .@npc_name$+"::OnEnableNPC";
+	end;
+
+	OnEnableNPC:
+		if ( 'ladder_level <= 4 )
+			enablenpc instance_npcname( "faceworm_instance_warp_"+'ladder_level );
+		donpcevent instance_npcname( "Chaos#faceworm" )+"::OnEnable";
+		donpcevent instance_npcname( "Iris#faceworm" )+"::OnEnable";
+		end;
+	
+	OnEnd1:
+		.@map$ = strnpcinfo(4);
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		.@mobcount = mobcount( .@map$,.@npc_name$+"::OnEnd1" );
+		if ( .@mobcount )
+			mapannounce .@map$,"Faceworm Alive : "+.@mobcount,bc_map;
+		if ( .@mobcount == 3 && !mobcount( .@map$,.@npc_name$+"::OnBossKill" ) ) {
+			mapannounce .@map$,"A Boss has appeared.",bc_map;
+			areamonster .@map$,74,37,151,85,"--ja--",2530,1,.@npc_name$+"::OnBossKill";
+		}
+		end;
+			
+	OnEnd2:
+		.@map$ = strnpcinfo(4);
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		.@mobcount = mobcount( .@map$,.@npc_name$+"::OnEnd2" );
+		if ( .@mobcount )
+			mapannounce .@map$,"Faceworm Alive : "+.@mobcount,bc_map;
+		if ( .@mobcount == 3 && !mobcount( .@map$,.@npc_name$+"::OnBossKill" ) ) {
+			mapannounce .@map$,"A Boss has appeared.",bc_map;
+			areamonster .@map$,111,224,203,289,"--ja--",2530,1,.@npc_name$+"::OnBossKill";
+		}
+		end;
+			
+	OnEnd3:
+		.@map$ = strnpcinfo(4);
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		.@mobcount = mobcount( .@map$,.@npc_name$+"::OnEnd3" );
+		mapannounce .@map$,"Faceworm Alive : "+.@mobcount,bc_map;
+		if ( .@mobcount == 3 && !mobcount( .@map$,.@npc_name$+"::OnBossKill" ) ) {
+			mapannounce .@map$,"A Boss has appeared.",bc_map;
+			monster .@map$,276,308,"--ja--",2530,1,.@npc_name$+"::OnBossKill";
+		}
+		end;
+			
+	OnEnd4:
+		.@map$ = strnpcinfo(4);
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		.@mobcount = mobcount( .@map$,.@npc_name$+"::OnEnd4" );
+		if ( .@mobcount )
+			mapannounce .@map$,"Faceworm Alive : "+.@mobcount,bc_map;
+		if ( .@mobcount == 3 && !mobcount( .@map$,.@npc_name$+"::OnBossKill" ) ) {
+			mapannounce .@map$,"A Boss has appeared.",bc_map;
+			monster .@map$,214,105,"--ja--",2530,1,.@npc_name$+"::OnBossKill";
+		}
+		end;
+			
+	OnEnd5:
+		.@map$ = strnpcinfo(4);
+		.@npc_name$ = instance_npcname( "Treasure#faceworm" );
+		.@mobcount = mobcount( .@map$,.@npc_name$+"::OnEnd5" );
+		if ( .@mobcount > 0 ) {
+			mapannounce .@map$,"Faceworm Alive : "+.@mobcount,bc_map;
+		}
+		else {
+			.@timer = getnpctimer(0) / 1000;
+			announce "Final Stage: Completed in "+callfunc("epoch_time", .@timer ),bc_map;
+			'stage_time = .@timer;
+			stopnpctimer instance_npcname( "faceworm_nest_instance" );
+			stopnpctimer;
+			sleep 1000;
+			killmonster .@map$,"All";
+			movenpc .@npc_name$,213,159;
+			hideoffnpc .@npc_name$;
+			'ladder_level++;
+			sleep 3000;
+			mapannounce .@map$,"This scary Faceworm nest expedition has come to an end with the defeat of the Queen!",bc_map;
+			sleep 3000;
+			donpcevent .@npc_name$+"::OnEnableNPC";
+			sleep 2000;
+			donpcevent instance_npcname( "Chaos#faceworm" )+"::OnEnd";
+			donpcevent instance_npcname( "Iris#faceworm" )+"::OnEnd";
+		}
+		end;
+	
+		
+}
+
+
+
+1@face,108,351,5	script	Chaos#faceworm	4_M_CHAOS,{
+	
+	if ( 'ladder_level == -1 ) {
+		mes "You want to leave ? You wont be able to come back upon leave.";
+		if ( select( "Leave","Cancel" ) == 1 ) {
+			warp "Save",0,0;
+		}
+		close;
+	}
+	
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	
+	if ( !'talking || !.@is_leader ) end;
+	
+	cutin "h_chaos01",2;
+	if ( !.@party_id ) {
+		mes "^0055FF[ Faceworm Expedition ]^000000";
+		mes "You dont belong to any party here.";
+		close2;
+		warp "Save",0,0;
+		end;
+	}
+	
+	.@npc_name$ = strnpcinfo(3);
+	'talking = !'talking;
+	// mes "["+.@npc_name$+"]";
+	switch ( 'ladder_level ) {
+		default: 
+			mes "Hmm ... ";
+			close2;
+			cutin "",255;
+			end;
+		case 0:
+			mes "Hmm, I didnt expecting there are actually somebody else is here...";
+			npctalk "Hmm, I didnt expecting there are actually somebody else is here...";
+			next;
+			mes "The Faceworm are spotted around this area. Are you to join ?";
+			npctalk "The Faceworm are spotted around this area. Are you to join ?";
+			next;
+			mes "Haiz, nevermind. I wouldn't mind if you join us, but dont bring us trouble. We won't back you up here!";
+			npctalk "Haiz, nevermind. I wouldn't mind if you join us, but dont bring us trouble. We won't back you up here!";
+			next;
+			mes "I sensed a storm is coming soon!";
+			npctalk "I sensed a storm is coming soon!";
+			next;
+			mes "Iris, it seem like Faceworm is getting active now. The Queen is probably around here."; 
+			npctalk "Iris, it seem like Faceworm is getting active now. The Queen is probably around here."; 
+			next;
+			mes "I guess both of us should take care of it as soon as possible!";
+			npctalk "I guess both of us should take care of it as soon as possible!";
+			next;
+			mes "Let's go Iris !!";
+			npctalk "Let's go Iris !!";
+			emotion e_go;
+			setarray .@xy,120,97;
+			break;
+		case 1:
+			mes "Woah ~ This is really not something we're expected.";
+			npctalk "Woah ~ This is really not something we're expected.";
+			next;
+			mes "That was fast, it's great!";
+			npctalk "That was fast, it's great!";
+			next;
+			mes "However, it wouldn't be this easy if its the Queen.";
+			npctalk "However, it wouldn't be this easy if its the Queen.";
+			next;
+			mes "The Faceworm you seen just now, just a mere mutated Faceworm.";
+			npctalk "The Faceworm you seen just now, just a mere mutated Faceworm.";
+			next;
+			mes "Never underestimate it, you have seen how far it can go !";
+			npctalk "Never underestimate it, you have seen how far it can go !";
+			next;
+			mes "It seem like no more Faceworm around here, I will go first. Iris, you deal with these adventures!";
+			npctalk "It seem like no more Faceworm around here, I will go first. Iris, you deal with these adventures!";
+			next;
+			setarray .@xy,153,114;
+			break;
+		case 2:
+			mes "I admit you are strong, but you shall be more careful starting here.";
+			npctalk "The narrow valley in front are way more  dangerous...";
+			next;
+			mes "The narrow valley in front are way more  dangerous...";
+			npctalk "The narrow valley in front are way more  dangerous...";
+			setarray .@xy,257,169;
+			break;
+		case 3:
+			mes "Good that you survived till now.";
+			npctalk "Good that you survived till now.";
+			next;
+			mes "However, our plan are seem to be working well.";
+			npctalk "However, our plan are seem to be working well.";
+			next;
+			mes "We're probably getting near to the Queen Hive now.";
+			npctalk "We're probably getting near to the Queen Hive now.";
+			next;
+			mes "Stay alert!!";
+			npctalk "Stay alert!!";
+			setarray .@xy,206,153;
+			break;
+		case 4:
+			mes "Hmm, this hive entrance, seem abit too huge for the Faceworm??";
+			npctalk "Hmm, this hive entrance, seem abit too huge for the Faceworm??";
+			next;
+			mes "Maybe I will just enter and take a look!";
+			npctalk "Maybe I will just enter and take a look!";
+			setarray .@xy,211,157;
+			break;
+	}
+	close2;
+	hideonnpc .@npc_name$;
+	cutin "",255;
+	if ( .@xy )
+		movenpc .@npc_name$,.@xy[0],.@xy[1];
+	end;
+	
+	OnInit:
+	OnDisable:
+		hideonnpc strnpcinfo(3);
+		end;
+	
+	OnEnable:
+		hideoffnpc strnpcinfo(3);
+		end;
+		
+	OnHelp:
+		'talking = 1;
+		npctalk "Ah!What is this!??";
+		sleep 2000;
+		.@message$ = "ah";
+		for ( .@i = 0; .@i < 5; .@i++ ) {
+			.@message$ = replacestr( .@message$,"ah","aaahhh" );
+			npctalk .@message$+"...";
+			emotion e_hlp;
+			sleep 350;
+		}
+		
+		donpcevent instance_npcname( "#faceworm_effect" )+"::OnEffect";
+		.@npc_name$ = strnpcinfo(3);
+		movenpc .@npc_name$,206,153;
+		hideoffnpc .@npc_name$;
+		npctalk "Damn, that was close to become the Queen Food~";
+		emotion e_wah;
+		sleep 3000;
+		npctalk "The Queen is so angry now, and coming toward us now. I guess we shall hide ourself now.";
+		emotion e_wah;
+		sleep 1000;
+		hideonnpc .@npc_name$;
+		'talking = 0;
+		donpcevent instance_npcname( "Iris#faceworm" )+"::OnHelp";
+		end;
+		
+	OnEnd:
+		npctalk "Woah, this expedition is so long...";
+		sleep 3000;
+		npctalk "It seem our equipments are mostly broken now, need to repair it.";
+		sleep 3000;
+		npctalk "I think we shall dismiss now for today!";
+		sleep 3000;
+		npctalk "You... you did well today!";
+		sleep 2000;
+		npctalk "I wont deny what you all did today, the rewards are all yours now.";
+		sleep 6000;
+		npctalk "Okay, let's back to the village.";
+		sleep 3000;
+		hideonnpc strnpcinfo(3);
+		end;
+}
+
+1@face,115,348,3	script	Iris#faceworm	4_F_IRIS,{
+	
+	if ( 'ladder_level == -1 ) {
+		mes "You want to leave ? You wont be able to come back upon leave.";
+		if ( select( "Leave","Cancel" ) == 1 ) {
+			warp "Save",0,0;
+		}
+		close;
+	}
+	
+	.@party_id = getcharid(1);
+	.@is_leader = ( getcharid(0) == getpartyleader(.@party_id,2) );
+	
+	if ( 'talking || !.@is_leader ) end;
+	
+	cutin "h_iris01",2;
+	if ( !.@party_id ) {
+		mes "^0055FF[ Faceworm Expedition ]^000000";
+		mes "You dont belong to any party here.";
+		close2;
+		warp "Save",0,0;
+		end;
+	}
+	
+	'talking = !'talking;
+	.@npc_name$ = strnpcinfo(3);
+	switch ( 'ladder_level ) {
+		default: 
+			mes "Hmm ... ";
+			close2;
+			cutin "",255;
+			end;
+		case 0:
+			mes "Hey Chaos, dont rush there yourself!";
+			npctalk "Hey Chaos, dont rush there yourself!";
+			next;
+			mes "It's dangerous for you in case you met the Queen alone.";
+			npctalk "It's dangerous for you in case you met the Queen alone.";
+			next;
+			mes "Damn, he never listen to me.";
+			npctalk "Damn, he never listen to me.";
+			next;
+			mes "Sorry but I need to gather with him before he come out with any problems.";
+			npctalk "Sorry but I need to gather with him before he come out with any problems.";
+			next;
+			mes "Stay safe, we'll meet again young adventures.";
+			npctalk "Stay safe, we'll meet again young adventures.";
+			emotion e_no1;
+			setarray .@xy,127,99;
+			donpcevent instance_npcname( "faceworm_nest_instance" )+"::OnStart1";
+			break;
+		case 1:
+			mes "Hey Chaos, not again??!!";
+			npctalk "Hey Chaos, not again??!!";
+			next;
+			mes "By the way, did you obtain the Skin after you killed it? That item is useful.";
+			npctalk "By the way, did you obtain the Skin after you killed it? That item is useful.";
+			next;
+			mes "But if you drag the battle too long, you could damaged the skin, end up become useless as well. Careful with that.";
+			npctalk "But if you drag the battle too long, you could damaged the skin, end up become useless as well. Careful with that.";
+			next;
+			mes "I heard that pro hunters are able to defeat it in no time, able to carefully obtain it without damaging it.";
+			npctalk "I heard that pro hunters are able to defeat it in no time, able to carefully obtain it without damaging it.";
+			next;
+			mes "Even Chaos unable to do this. *hehe*";
+			npctalk "Even Chaos unable to do this. *hehe*";
+			next;
+			mes "Come, let's follow Chaos!! I am sure he need our help too.";
+			npctalk "Come, let's follow Chaos!! I am sure he need our help too.";
+			emotion e_no1;
+			setarray .@xy,159,115;
+			donpcevent instance_npcname( "faceworm_nest_instance" )+"::OnStart2";
+			break;
+		case 2:
+			mes "Careful, it could have alot of traps.";
+			npctalk "Careful, it could have alot of traps.";
+			next;
+			mes "Look carefully around you. Stay Alert!";
+			npctalk "Look carefully around you. Stay Alert!";
+			next;
+			mes "We'll move on to check on the situation.";
+			npctalk "We'll move on to check on the situation.";
+			emotion e_no1;
+			setarray .@xy,265,171;
+			donpcevent instance_npcname( "faceworm_nest_instance" )+"::OnStart3";
+			break;
+		case 3:
+			mes "We're gonna eliminate all the remaining Faceworm once and for all.";
+			npctalk "We're gonna eliminate all the remaining Faceworm once and for all.";
+			next;
+			mes "Fight till the very end, brave adventures.";
+			npctalk "Fight till the very end, brave adventures.";
+			setarray .@xy,221,153;
+			donpcevent instance_npcname( "faceworm_nest_instance" )+"::OnStart4";
+			break;
+		case 4:
+			mes "Come on Chaos!! Are you kidding!!??";
+			npctalk "Come on Chaos!! Are you kidding!!??";
+			next;
+			mes "That's way too dangerous, we dunno what could be waiting inside it.";
+			npctalk "That's way too dangerous, we dunno what could be waiting inside it.";
+			donpcevent instance_npcname( "Chaos#faceworm" )+"::OnHelp";
+			close2;
+			cutin "",255;
+			end;
+	}
+	close2;
+	hideonnpc .@npc_name$;
+	if ( .@xy )
+		movenpc .@npc_name$,.@xy[0],.@xy[1];
+	cutin "",255;
+	end;
+
+	OnInit:
+	OnDisable:
+		hideonnpc strnpcinfo(3);
+		end;
+	
+	OnEnable:
+		hideoffnpc strnpcinfo(3);
+		end;
+		
+	OnHelp:	
+		'talking = 1;
+		.@npc_name$ = strnpcinfo(3);
+		npctalk "Damn, Chaos you're such a Fool!!";
+		sleep 1000;
+		npctalk "You should just just die inside there and become the food for Queen.";
+		sleep 2000;
+		npctalk "Damn it, run and save yourself adventures!";
+		sleep 3000;
+		hideonnpc .@npc_name$;
+		donpcevent instance_npcname( "faceworm_nest_instance" )+"::OnStart5";
+		'talking = 1;
+		end;
+		
+	OnEnd:
+		sleep 4000;
+		npctalk "But this monster doesnt seem like the one we looking for?";
+		sleep 3000;
+		npctalk "Although we  didnt have the chance to meet with the Faceworm King, but I am glad that nobody has died during the expedition.";
+		sleep 6000;
+		npctalk "Let's get back to the village , shall we ?? I am tired.";
+		enablenpc instance_npcname("Transport Device#fexit");
+		sleep 3000;
+		hideonnpc strnpcinfo(3);
+		end;
+}
+
+1@face,213,158,4	script	#faceworm_effect	HIDDEN_WARP_NPC,2,2,{
+	end;
+	
+	OnEffect:
+		while ( .@i < 20 ) {
+			misceffect 899;
+			misceffect 901;
+			.@i++;
+			sleep 1000;
+			misceffect 585;
+		}
+		end;
+}
+
+
+
+1@face,202,169,4	script	#faceworm_rand_skill	HIDDEN_WARP_NPC,5,5,{
+OnTouch_:
+	if ( mobcount( strcharinfo(3),instance_npcname( "faceworm_nest_instance" )+"::OnEnd5" ) ) {
+		// TODO: damage issue.
+		npcskill WZ_WATERBALL,10,130,175;
+		sleep2 5000;
+		disablenpc strnpcinfo(3);
+		sleep2 15000;
+		enablenpc strnpcinfo(3);
+	}
+	end;
+}
+
+1@face,202,159,4	duplicate(#faceworm_rand_skill)	#faceworm_rand_skill_01	HIDDEN_WARP_NPC,5,5
+1@face,202,149,4	duplicate(#faceworm_rand_skill)	#faceworm_rand_skill_02	HIDDEN_WARP_NPC,5,5
+1@face,213,149,4	duplicate(#faceworm_rand_skill)	#faceworm_rand_skill_03	HIDDEN_WARP_NPC,5,5
+1@face,223,149,4	duplicate(#faceworm_rand_skill)	#faceworm_rand_skill_04	HIDDEN_WARP_NPC,5,5
+1@face,223,159,4	duplicate(#faceworm_rand_skill)	#faceworm_rand_skill_05	HIDDEN_WARP_NPC,5,5
+1@face,223,169,4	duplicate(#faceworm_rand_skill)	#faceworm_rand_skill_06	HIDDEN_WARP_NPC,5,5
+1@face,213,169,4	duplicate(#faceworm_rand_skill)	#faceworm_rand_skill_07	HIDDEN_WARP_NPC,5,5
+
+
+// 1@face,202,169,4	script	#faceworm_rand_skill	HIDDEN_WARP_NPC,5,5,{
+// OnTouch_:
+	// // TODO: change to Poison Cloud
+	// unitskillusepos getnpcid(0),SO_CLOUD_KILL,10,155,171;
+	// sleep2 5000;
+	// disablenpc strnpcinfo(3);
+	// sleep2 15000;
+	// enablenpc strnpcinfo(3);
+	// end;
+// }
+
+
