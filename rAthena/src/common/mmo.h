@@ -67,7 +67,7 @@
 #define MAX_WALK_SPEED 1000 ///Max walk speed
 #define MAX_STORAGE 600 ///Max number of storage slots a player can have
 #define MAX_GUILD_STORAGE 600 ///Max number of storage slots a guild
-#define MAX_PARTY 24 ///Max party member
+#define MAX_PARTY 48 ///Max party member
 #define MAX_GUILD 16+10*6	///Increased max guild members +6 per 1 extension levels [Lupus]
 #define MAX_GUILDPOSITION 20	///Increased max guild positions to accomodate for all members [Valaris] (removed) [PoW]
 #define MAX_GUILDEXPULSION 32 ///Max Guild expulsion
@@ -882,7 +882,6 @@ enum e_rank {
 	RANK_TAEKWON = 2,
 	RANK_KILLER = 3
 };
-
 
 struct clan_alliance {
 	int opposition;

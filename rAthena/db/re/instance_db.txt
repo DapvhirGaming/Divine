@@ -27,3 +27,4 @@
 105,Faceworm Nest,3600,300,1@face,112,369
 107,Horror Toy Factory,3600,300,1@xm_d,119,20
 108,Infinite Space,3600,300,1@infi,30,8
+15,Geffen Magic Tournament,7200,300,1@gef,119,209,1@gef_in,1@ge_st

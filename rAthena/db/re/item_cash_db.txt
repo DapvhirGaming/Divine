@@ -84,4 +84,4 @@
 1,16396,700  //Box of 10 HD Elunium
 1,17246,2300 //Box of 30 HD Elunium
 1,17105,3900 //Box of 50 HD Elunium
-1,7581,700   //30 Days VIP account
+1,7581,700   //Divine VIP

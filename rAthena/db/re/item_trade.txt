@@ -944,6 +944,7 @@
 7170,1,100	// Tuxedo
 7177,507,100	// Part_Of_Star's_Sob
 7178,507,100	// Star's_Sob
+7179,490,100	// Proof of Donation
 7275,507,100	// Ancient_Document
 7276,507,100	// Picture_Letter
 7304,507,100	// Witch's_Spell_Book
@@ -1045,6 +1046,7 @@
 7577,499,100	// Golden_Jewel_
 7579,499,100	// Silk_Handkerchief
 7580,499,100	// Black_Bead
+7581,490,100	// Divine VIP
 7583,499,100	// Evil_Mind
 7584,499,100	// Proof_Of_Guard1
 7585,499,100	// Proof_Of_Guard2

@@ -5054,7 +5054,7 @@
 7176,XMAS_Coupon,Royal Certificate,3,0,,10,,,,,,,,,,,,,{},{},{}
 7177,Part_Of_Star's_Sob,Crumb of Sobbing Starlight,3,0,,0,,,,,,,,,,,,,{},{},{}
 7178,Star's_Sob,Sobbing Starlight,3,0,,0,,,,,,,,,,,,,{},{},{}
-7179,Donation_Card,Proof of Donation,3,0,,10,,,,,,,,,,,,,{ #CASHPOINTS += 100; },{},{}
+7179,Donation_Card,Proof of Donation,2,0,,20,,,,,0xFFFFFFFF,63,2,,,,,,{ callfunc "donate"; },{},{}
 7180,Introduction_Of_Mr.Han,Hahn Sukbong's Recommendation,3,0,,10,,,,,,,,,,,,,{},{},{}
 7181,Receipt_01,Receipt,3,0,,10,,,,,,,,,,,,,{},{},{}
 7182,Cacao,Cacao,3,200,,20,,,,,,,,,,,,,{},{},{}
@@ -11631,7 +11631,6 @@
 30102,Giant_Phoenix_Wings,Empowered Giant Phoenix Wings,4,10,10,1,,,,1,0xFFFFFFF,63,2,512,0,1,0,4032,{ bonus bAllStats,6; bonus bAgi,3; bonus bDex,3; bonus bAspdRate,3; bonus bAtkRate,10; bonus bCriticalRate,5; autobonus "{ bonus bCritAtkRate,50; }",5,5000,0,"{ specialeffect2 EF_ENHANCE; }"; },{},{}
 30103,Wings_of_the_Einherjar,Empowered Wings of the Einherjar,4,10,10,1,,,,1,0xFFFFFFF,63,2,512,0,1,0,4033,{},{},{}
 30104,Bravery_Bag,Beginner's Backpack,4,0,,200,,20,,1,0xFFFFFFFF,63,2,4,,0,1,2,{ bonus bAllStats,1; bonus bMaxHP,1000; bonus bMaxSp,500; bonus bAtk,10; bonus bMatk,10; },{},{}
-
 //==========================================================
 // More Costumes
 //==========================================================

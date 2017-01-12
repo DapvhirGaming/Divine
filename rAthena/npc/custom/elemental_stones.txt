@@ -166,6 +166,3 @@ function	script	elestone	{
 		close;
 			}
 		}
-		
-	
-}

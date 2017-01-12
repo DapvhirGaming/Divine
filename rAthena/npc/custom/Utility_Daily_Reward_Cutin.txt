@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `ero_daily_rewards` (
 
 */
 
-prontera,155,175,5	script	Daily#npc	4_F_KAFRA9,{
+prontera,154,184,5	script	Daily#npc	4_F_KAFRA9,{
 	doevent "daily_login_reward::OnTalk";
 }
 

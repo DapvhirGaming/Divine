@@ -2008,6 +2008,8 @@ int map_quit(struct map_session_data *sd) {
 		status_change_end(&sd->bl, SC_CHASEWALK2, INVALID_TIMER);
 		if(sd->sc.data[SC_ENDURE] && sd->sc.data[SC_ENDURE]->val4)
 			status_change_end(&sd->bl, SC_ENDURE, INVALID_TIMER); //No need to save infinite endure.
+		if(sd->sc.data[SC_PROVOKE] && sd->sc.data[SC_PROVOKE]->timer == INVALID_TIMER)
+			status_change_end(&sd->bl, SC_PROVOKE, INVALID_TIMER); //Infinite provoke ends on logout
 		status_change_end(&sd->bl, SC_WEIGHT50, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_WEIGHT90, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SATURDAYNIGHTFEVER, INVALID_TIMER);
@@ -2183,7 +2185,7 @@ struct map_session_data* map_charid2sd(int charid)
  * (without sensitive case if necessary)
  * return map_session_data pointer or NULL
  *------------------------------------------*/
-struct map_session_data * map_nick2sd(const char *nick)
+struct map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 {
 	struct map_session_data* sd;
 	struct map_session_data* found_sd;
@@ -2200,7 +2202,7 @@ struct map_session_data * map_nick2sd(const char *nick)
 	found_sd = NULL;
 	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
 	{
-		if( battle_config.partial_name_scan )
+		if( allow_partial && battle_config.partial_name_scan )
 		{// partial name search
 			if( strnicmp(sd->status.name, nick, nicklen) == 0 )
 			{
@@ -2218,6 +2220,7 @@ struct map_session_data * map_nick2sd(const char *nick)
 		else if( strcasecmp(sd->status.name, nick) == 0 )
 		{// exact search only
 			found_sd = sd;
+			qty = 1;
 			break;
 		}
 	}

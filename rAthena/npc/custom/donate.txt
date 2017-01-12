@@ -1,0 +1,7 @@
+function	script	donate	{
+
+	#CASHPOINTS += 100;
+	dispbottom "Got 100";
+	end;
+
+}

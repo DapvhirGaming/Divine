@@ -2311,10 +2311,11 @@ Also useful when passing arrays to functions or accessing another npc's arrays:
 ---------------------------------------
 
 *readparam(<parameter number>{,"<character name>"})
+*readparam(<parameter number>{,<char_id>})
 
 This function will return the specified stat of the invoking character, or, if a
-character name is specified, of that player. The stat can either be a number or
-parameter name, defined in 'src/map/script_constants.h'.
+character name or character id is specified, of that player. The stat can either
+be a number or parameter name, defined in 'src/map/script_constants.h'.
 
 Some example parameters:
 
@@ -3967,15 +3968,20 @@ normally translate to random coordinates.
 
 ---------------------------------------
 
-*savepoint "<map name>",<x>,<y>{,<char_id>};
-*save "<map name>",<x>,<y>{,<char_id>};
+*savepoint "<map name>",<x>,<y>{,{<range x>,<range y>,}<char_id>};
+*save "<map name>",<x>,<y>{,{<range x>,<range y>,}<char_id>};
 
 These commands save where the invoking character will return to upon clicking
 "Return to Save Point", after death and in some other cases. The two versions are 
 equivalent. They ignore any and all mapflags, and can make a character respawn where
 no teleportation is otherwise possible.
 
+The <range x> and <range y> optional values allow for a randomization with the
+player's save point. The values will randomly add or subtract from the given <x>
+and <y> coordinates.
+
     savepoint "place",350,75;
+	savepoint "place",350,75,2,2; // Randomly save the character between 348,73 and 352,77
 
 ---------------------------------------
 
@@ -8135,11 +8141,9 @@ of the "clock" and can be one of the following values:
     1 - Incremental counter (1 tick/second).
     2 - Decremental counter (1 tick/second). Does not stop at zero,
         but overflows.
-    3 - Decremental counter (1 tick/second). Two digits only, stops
+    3 - Decremental counter (2 ticks/second). Two digits only, stops
         at zero.
 
-For type 1 and 2 the start value is set by using negative number of
-the one intended to set (ex. -10 starts the counter at 10 seconds).
 Except for type 3 the value is interpreted as seconds and formatted
 as time in days, hours, minutes and seconds. Note, that the official
 script command does not have the optional parameter.
@@ -8147,7 +8151,7 @@ script command does not have the optional parameter.
     // displays 23:59:59 for 5 seconds
     showdigit 86399;
 
-    // counter that starts at 60 and runs for 60 seconds
+    // counter that starts at 60 and runs for 30 seconds
     showdigit 60,3;
 
 ---------------------------------------
@@ -8276,15 +8280,15 @@ that fails, the script will come to a halt.
 
 ---------------------------------------
 
-*instance_enter("<instance name>",{<x>,<y>,<char_id>});
+*instance_enter("<instance name>",{<x>,<y>,<char_id>,<instance id>});
 
 Warps player to the specified instance after the script terminates. The map and
 coordinates are located in 'db/(pre-)re/instance_db.txt'.
 
-The command returns 0 upon success, and these values upon failure:
- 1: Party/Guild not found (for party/guild modes).
- 2: Character/Party/Guild does not have an instance.
- 3: Other errors (invalid instance name, instance doesn't match with character/party/guild).
+The command returns IE_OK upon success, and these values upon failure:
+ IE_NOMEMBER:	Party/Guild not found (for party/guild modes).
+ IE_NOINSTANCE:	Character/Party/Guild does not have an instance.
+ IE_OTHER:		Other errors (invalid instance name, instance doesn't match with character/party/guild).
 
 Put -1 for x and y if want to warp player with default entrance coordinates.
 
@@ -8382,6 +8386,30 @@ if (instance_check_guild(getcharid(2),2,2,149)) {
 	mes "Sorry, your guild does not meet requirements.";
 	close;
 }
+
+---------------------------------------
+
+*instance_info("<instance name>",<info type>{,<instance_db map index>});
+
+Returns the specified <info type> of the given <instance name> from the instance database.
+If the <instance name> is unknown or an invalid <info type> is supplied -1 will be returned.
+
+Valid info types:
+ IIT_ID: Instance database ID as integer.
+ IIT_TIME_LIMIT: Instance database total life time as integer.
+ IIT_IDLE_TIMEOUT: Instance database timeout time as integer.
+ IIT_ENTER_MAP: Instance database enter map as string.
+ IIT_ENTER_X: Instance database enter X location as integer.
+ IIT_ENTER_Y: Instance database enter Y location as integer.
+ IIT_MAPCOUNT: Instance database total maps as integer.
+ IIT_MAP: Instance database map name from the given <instance_db map index> as string.
+          If the index is invalid an empty string will be returned.
+
+Example:
+
+.@name$ = "Endless Tower";
+mes .@name$ + " will be destroyed if no one is in the instance for " + instance_info(.@name$,IIT_IDLETIMEOUT) + " seconds.";
+// Endless Tower will be destroyed if no one is in the instance for 300 seconds.
 
 ---------------------------------------
 

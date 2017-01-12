@@ -91,4 +91,3 @@ dewata,197,189,4	duplicate(Reset Girl)	Reset Girl#dew	124
 dicastes01,188,197,4	duplicate(Reset Girl)	Reset Girl#dic	124
 malangdo,142,110,6	duplicate(Reset Girl)	Reset Girl#mal	124
 malaya,240,209,6	duplicate(Reset Girl)	Reset Girl#ma	124
-mora,50,149,4	duplicate(Reset Girl)	Reset Girl#mora	124

@@ -401,15 +401,12 @@ void pc_addfame(struct map_session_data *sd,int count)
 		sd->status.fame = MAX_FAME;
 
 	switch(sd->class_&MAPID_UPPERMASK){
-
-
 		case MAPID_BLACKSMITH:	ranktype = RANK_BLACKSMITH; break;
 		case MAPID_ALCHEMIST:	ranktype = RANK_ALCHEMIST; break;
 		case MAPID_TAEKWON:		ranktype = RANK_TAEKWON; break;
 		default:
 			ShowWarning( "pc_addfame: Trying to add fame to class '%s'(%d).\n", job_name(sd->class_), sd->class_ );
 			return;
-
 	}
 
 	clif_update_rankingpoint(sd,ranktype,count);
@@ -656,7 +653,8 @@ void pc_setnewpc(struct map_session_data *sd, uint32 account_id, uint32 char_id,
 	sd->client_tick = client_tick;
 	sd->state.active = 0; //to be set to 1 after player is fully authed and loaded.
 	sd->bl.type = BL_PC;
-	sd->canlog_tick = gettick();
+	if(battle_config.prevent_logout_trigger&PLT_LOGIN)
+		sd->canlog_tick = gettick();
 	//Required to prevent homunculus copuing a base speed of 0.
 	sd->battle_status.speed = sd->base_status.speed = DEFAULT_WALK_SPEED;
 }
@@ -4743,7 +4741,7 @@ bool pc_isUseitem(struct map_session_data *sd,int n)
 		return false;
 	//Prevent mass item usage. [Skotlex]
 	if( DIFF_TICK(sd->canuseitem_tick,gettick()) > 0 ||
-		(itemdb_iscashfood(nameid) && DIFF_TICK(sd->canusecashfood_tick,gettick()) > 0)
+		(itemdb_group_item_exists(IG_CASH_FOOD, nameid) && DIFF_TICK(sd->canusecashfood_tick,gettick()) > 0)
 	)
 		return false;
 
@@ -4827,18 +4825,18 @@ bool pc_isUseitem(struct map_session_data *sd,int n)
 			break;
 	}
 
-	if( nameid >= ITEMID_BOW_MERCENARY_SCROLL1 && nameid <= ITEMID_SPEARMERCENARY_SCROLL10 && sd->md != NULL )
+	if( itemdb_group_item_exists(IG_MERCENARY, nameid) && sd->md != NULL )
 		return false; // Mercenary Scrolls
 
 	/**
 	 * Only Rune Knights may use runes
 	 **/
-	if( itemdb_is_rune(nameid) && (sd->class_&MAPID_THIRDMASK) != MAPID_RUNE_KNIGHT )
+	if( itemdb_group_item_exists(IG_RUNE, nameid) && (sd->class_&MAPID_THIRDMASK) != MAPID_RUNE_KNIGHT )
 		return false;
 	/**
 	 * Only GCross may use poisons
 	 **/
-	else if( itemdb_is_poison(nameid) && (sd->class_&MAPID_THIRDMASK) != MAPID_GUILLOTINE_CROSS )
+	else if( itemdb_group_item_exists(IG_POISON, nameid) && (sd->class_&MAPID_THIRDMASK) != MAPID_GUILLOTINE_CROSS )
 		return false;
 
 	if( item->flag.group || item->type == IT_CASH) {	//safe check type cash disappear when overweight [Napster]
@@ -4997,7 +4995,7 @@ int pc_useitem(struct map_session_data *sd,int n)
 
 	//Update item use time.
 	sd->canuseitem_tick = tick + battle_config.item_use_interval;
-	if( itemdb_iscashfood(nameid) )
+	if( itemdb_group_item_exists(IG_CASH_FOOD, nameid) )
 		sd->canusecashfood_tick = tick + battle_config.cashfood_use_interval;
 
 	run_script(script,0,sd->bl.id,fake_nd->bl.id);
@@ -7479,7 +7477,8 @@ void pc_damage(struct map_session_data *sd,struct block_list *src,unsigned int h
 	if( sd->status.ele_id > 0 )
 		elemental_set_target(sd,src);
 
-	sd->canlog_tick = gettick();
+	if(battle_config.prevent_logout_trigger&PLT_DAMAGE)
+		sd->canlog_tick = gettick();
 }
 
 int pc_close_npc_timer(int tid, unsigned int tick, int id, intptr_t data)

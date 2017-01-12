@@ -673,7 +673,6 @@ struct map_data {
 		unsigned gvg_te : 1; // GVG WOE:TE. This was added as purpose to change 'gvg' for GVG TE, so item_noequp, skill_nocast exlude GVG TE maps from 'gvg' (flag &4)
 		unsigned gvg_te_castle : 1; // GVG WOE:TE Castle
 		unsigned hidemobhpbar : 1;
-
 #ifdef ADJUST_SKILL_DAMAGE
 		unsigned skill_damage : 1;
 #endif
@@ -855,7 +854,7 @@ void map_foreachmob(int (*func)(struct mob_data* md, va_list args), ...);
 void map_foreachnpc(int (*func)(struct npc_data* nd, va_list args), ...);
 void map_foreachregen(int (*func)(struct block_list* bl, va_list args), ...);
 void map_foreachiddb(int (*func)(struct block_list* bl, va_list args), ...);
-struct map_session_data * map_nick2sd(const char*);
+struct map_session_data * map_nick2sd(const char* nick, bool allow_partial);
 struct mob_data * map_getmob_boss(int16 m);
 struct mob_data * map_id2boss(int id);
 

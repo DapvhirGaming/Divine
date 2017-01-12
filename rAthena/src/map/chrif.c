@@ -1211,7 +1211,7 @@ int chrif_updatefamelist(struct map_session_data* sd) {
 		case MAPID_ALCHEMIST:  type = RANK_ALCHEMIST; break;
 		case MAPID_TAEKWON:    type = RANK_TAEKWON; break;
 		default:
-				return 0;
+			return 0;
 	}
 
 	WFIFOHEAD(char_fd, 11);
@@ -1606,17 +1606,10 @@ void chrif_parse_ack_vipActive(int fd) {
 			sd->vip.enabled = 1;
 			sd->vip.time = vip_time;
 			// Increase storage size for VIP.
-<<<<<<< HEAD
-			sd->storage_size = battle_config.vip_storage_increase + MIN_STORAGE;
-			if (sd->storage_size > MAX_STORAGE) {
-				ShowError("intif_parse_ack_vipActive: Storage size for player %s (%d:%d) is larger than MAX_STORAGE. Storage size has been set to MAX_STORAGE.\n", sd->status.name, sd->status.account_id, sd->status.char_id);
-				sd->storage_size = MAX_STORAGE;
-=======
 			sd->storage.max_amount = battle_config.vip_storage_increase + MIN_STORAGE;
 			if (sd->storage.max_amount > MAX_STORAGE) {
 				ShowError("intif_parse_ack_vipActive: Storage size for player %s (%d:%d) is larger than MAX_STORAGE. Storage size has been set to MAX_STORAGE.\n", sd->status.name, sd->status.account_id, sd->status.char_id);
 				sd->storage.max_amount = MAX_STORAGE;
->>>>>>> master
 			}
 			// Magic Stone requirement avoidance for VIP.
 			if (battle_config.vip_gemstone)
@@ -1624,11 +1617,7 @@ void chrif_parse_ack_vipActive(int fd) {
 		} else if (sd->vip.enabled) {
 			sd->vip.enabled = 0;
 			sd->vip.time = 0;
-<<<<<<< HEAD
-			sd->storage_size = MIN_STORAGE;
-=======
 			sd->storage.max_amount = MIN_STORAGE;
->>>>>>> master
 			sd->special_state.no_gemstone = 0;
 			clif_displaymessage(sd->fd,msg_txt(sd,438));
 		}
