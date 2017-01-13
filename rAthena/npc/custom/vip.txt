@@ -1,0 +1,5 @@
+function	script	VIP	{
+        atcommand "@vip +30d "+strcharinfo(0);
+		dispbottom "Got 30 Days of VIP time!";
+		end;
+}

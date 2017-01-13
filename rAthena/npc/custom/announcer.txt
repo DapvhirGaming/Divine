@@ -8,6 +8,6 @@ setarray .News$[0],
 "Do not forget to run DivinePatcher.exe regularly!!",
 "Want to see us grow? Be sure to vote daily through the control panel! You can vote once every 12 hours!",
 "Enjoying your time here, but wishing we were a little bigger? Feel free to leave us a review on RMS, or on their forums!",
-"Downtime is scheduled this saturday 1-7-17 from 9am-12pm server time CST GMT-5!";
+"Downtime is scheduled every saturday,usually from 9am CST to 12pm CST. Watch the forums and discord for changes and when it's back up!";
 while( 1 ) { announce .News$[ rand( getarraysize( .News$ ) ) ], bc_all, 0xDA70D6;
 sleep ( .Time * 3000 ); } end; }

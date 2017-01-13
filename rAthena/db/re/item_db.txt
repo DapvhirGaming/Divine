@@ -5455,7 +5455,7 @@
 7578,Anti_Spell_Bead,Countermagic Crystal,3,20,,10,,,,,,,,,,,,,{},{},{}
 7579,Silk_Handkerchief,Silk Handkerchief of Zhi Nu,3,20,,10,,,,,,,,,,,,,{},{},{}
 7580,Black_Bead,Black Marble,3,20,,10,,,,,,,,,,,,,{},{},{}
-7581,Anniversary_Ticket,Divine VIP,3,20,,10,,,,,,,,,,,,,{ callfunc( "VIP_upgrade", 30, 7581, 0 );},{},{}
+7581,Anniversary_Ticket,Divine VIP,2,1,,10,,,,,0xFFFFFFFF,63,2,,,,,,{ callfunc "VIP"; },{},{}
 7582,Gem_Of_Ruin,Jewel of Destruction,3,10,,10,,,,,,,,,,,,,{},{},{}
 7583,Evil_Mind,Evil Mind,3,10,,10,,,,,,,,,,,,,{},{},{}
 7584,Proof_Of_Guard1,Guard's First Proof,3,10,,10,,,,,,,,,,,,,{},{},{}
