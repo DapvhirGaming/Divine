@@ -122,9 +122,9 @@ prontera,154,184,5	script	Daily#npc	4_F_KAFRA9,{
 					case 26: reward_list( .@give_reward, 616,10 ); break;		// Old Card Album 10
 					case 27: reward_list( .@give_reward, 12214,10 ); break;		// Convex Mirror 10x
 					case 28: reward_list( .@give_reward, 7621,5 ); break;		// Token of Siegfried 5x
-					case 29: reward_list( .@give_reward, 12623,10 ); break;		// Advanced Weapons Box x10
-					case 30: reward_list( .@give_reward, 12103,5 ); break;		// Bloody Branch 5x
-					case 31: reward_list( .@give_reward, 12246,10 ); break;		// Mystical Card Album x10
+					case 29: reward_list( .@give_reward, 12103,5 ); break;		// Bloody Branch x5
+					case 30: reward_list( .@give_reward, 12246,1 ); break;		// Mystical Card Album x1
+					case 31: reward_list( .@give_reward, 7179,1 ); break;		// P
 					default:
 						mes "No rewards available for this day.";
 						close;

@@ -2,7 +2,7 @@ prontera,163,187,5	script	Storage Kafra	112,{
     mes "[ Kafra ]";
     mes "Which storage do you want to open?";
     next;
-    switch(select("Normal Storage","Premium Storage","VIP Storage")) {
+    switch(select("Normal Storage","Premium Storage","VIP Storage","Guild Storage")) {
         case 1:
             mes "[ Kafra ]";
             mes "Storage will be opened. Thank you";
@@ -26,6 +26,12 @@ prontera,163,187,5	script	Storage Kafra	112,{
             }
             close2;
             openstorage2(2,.@mode);
+            break;
+		case 4:
+            mes "[ Kafra ]";
+            mes "Guild Storage will be opened. Thank you";
+            close2;
+            guildopenstorage;
             break;
     }
     end;

@@ -16,9 +16,9 @@ function	script	epoch_time	{
 	function	func_max_base_level	{
 		.@eaclass = getarg( 0,0 );
 		
-		if ( .@eaclass == EAJ_SUPER_BABY || .@eaclass == EAJ_SUPER_BABY_E || .@eaclass == .@eaclass == EAJ_SUPER_NOVICE_E  ) return 160;
-		else if ( .@eaclass == EAJ_KAGEROUOBORO || .@eaclass == EAJ_REBELLION ) return 160;
-		else if ( .@eaclass & EAJL_THIRD ) return 175;
+		if ( .@eaclass == EAJ_SUPER_BABY || .@eaclass == EAJ_SUPER_BABY_E || .@eaclass == EAJ_SUPER_NOVICE_E || .@eaclass == EAJ_TAEKWON ) return 255;
+		else if ( .@eaclass == EAJ_KAGEROUOBORO || .@eaclass == EAJ_REBELLION ) return 255;
+		else if ( .@eaclass & EAJL_THIRD ) return 255;
 		
 		else return 99;
 	}
@@ -29,10 +29,10 @@ function	script	epoch_time	{
 		if ( .@eaclass == EAJ_NOVICE || .@eaclass == EAJ_NOVICE_HIGH ) return 10;
 		else if ( .@eaclass == EAJ_NINJA || .@eaclass == EAJ_GUNSLINGER ) return 70;
 		else if ( .@eaclass == EAJ_SUPER_BABY || .@eaclass == EAJ_SUPER_BABY_E || .@eaclass == .@eaclass == EAJ_SUPER_NOVICE_E  ) return 99;
-		else if ( .@eaclass & EAJL_THIRD ) return 60;
-		else if ( .@eaclass & EAJL_UPPER && .@eaclass & EAJL_2 ) return 70;
+		else if ( .@eaclass & EAJL_THIRD ) return 120;
+		else if ( .@eaclass & EAJL_UPPER && .@eaclass & EAJL_2 ) return 120;
 
-		else return 50;
+		else return 120;
 	}
 	
 	OnInit:

@@ -804,7 +804,7 @@ configure: failed program was:
 configure:6021: result: -shared yes
 configure:6030: checking whether gcc needs -Wl,--no-undefined to check for undefined references in shared objects
 configure:6042: gcc -o conftest  -shared  -DMAXCONN=16384 -I../common -DHAS_TLS  conftest.c  >&5
-/usr/bin/ld: /tmp/ccpndK5s.o: relocation R_X86_64_PC32 against undefined symbol `foobar' can not be used when making a shared object; recompile with -fPIC
+/usr/bin/ld: /tmp/ccSMuzNf.o: relocation R_X86_64_PC32 against undefined symbol `foobar' can not be used when making a shared object; recompile with -fPIC
 /usr/bin/ld: final link failed: Bad value
 collect2: error: ld returned 1 exit status
 configure:6042: $? = 1
@@ -840,7 +840,7 @@ configure: failed program was:
 configure:6073: result: no
 configure:6086: checking whether gcc needs -fPIC for shared objects
 configure:6102: gcc -o conftest -g -O2 -pipe -ffast-math -Wall -Wno-unused-parameter -Wno-maybe-uninitialized -Wno-clobbered -Wempty-body -Wno-switch -Wno-missing-field-initializers -Wshadow  -shared  -DMAXCONN=16384 -I../common -DHAS_TLS  conftest.c  >&5
-/usr/bin/ld: /tmp/ccSU2I1Q.o: relocation R_X86_64_PC32 against symbol `bar' can not be used when making a shared object; recompile with -fPIC
+/usr/bin/ld: /tmp/ccFkUTUE.o: relocation R_X86_64_PC32 against symbol `bar' can not be used when making a shared object; recompile with -fPIC
 /usr/bin/ld: final link failed: Bad value
 collect2: error: ld returned 1 exit status
 configure:6102: $? = 1
@@ -909,7 +909,7 @@ configure:6244: $? = 0
 configure:6244: result: yes
 configure:6434: checking for library containing inflateEnd
 configure:6465: gcc -o conftest -g -O2 -pipe -ffast-math -Wall -Wno-unused-parameter -Wno-maybe-uninitialized -Wno-clobbered -Wempty-body -Wno-switch -Wno-missing-field-initializers -Wshadow -fPIC -fno-strict-aliasing  -DMAXCONN=16384 -I../common -DHAS_TLS -DHAVE_SETRLIMIT -DHAVE_STRNLEN  -I/usr/include  -L/usr/lib conftest.c  >&5
-/tmp/cczmcci8.o: In function `main':
+/tmp/cc7QgiQ3.o: In function `main':
 /home/divinero123/rAthena/conftest.c:39: undefined reference to `inflateEnd'
 collect2: error: ld returned 1 exit status
 configure:6465: $? = 1
@@ -968,7 +968,7 @@ configure:6540: gcc -o conftest -g -O2 -pipe -ffast-math -Wall -Wno-unused-param
 conftest.c:35:6: warning: conflicting types for built-in function 'sqrt' [enabled by default]
  char sqrt ();
       ^
-/tmp/ccKgtCsh.o: In function `main':
+/tmp/ccypRihd.o: In function `main':
 /home/divinero123/rAthena/conftest.c:39: undefined reference to `sqrt'
 collect2: error: ld returned 1 exit status
 configure:6540: $? = 1
@@ -1033,7 +1033,7 @@ configure:6662: $? = 0
 configure:6664: result: yes
 configure:6686: checking for library containing pthread_create
 configure:6717: gcc -o conftest -g -O2 -pipe -ffast-math -Wall -Wno-unused-parameter -Wno-maybe-uninitialized -Wno-clobbered -Wempty-body -Wno-switch -Wno-missing-field-initializers -Wshadow -fPIC -fno-strict-aliasing  -DMAXCONN=16384 -I../common -DHAS_TLS -DHAVE_SETRLIMIT -DHAVE_STRNLEN  -I/usr/include -DHAVE_MONOTONIC_CLOCK  -L/usr/lib conftest.c -lm -lz  >&5
-/tmp/ccVNO3ws.o: In function `main':
+/tmp/ccTRRfNp.o: In function `main':
 /home/divinero123/rAthena/conftest.c:39: undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
 configure:6717: $? = 1
@@ -1128,7 +1128,7 @@ configure:7207: checking MySQL library (required)
 configure:7210: result: yes (5.5.52)
 configure:7239: checking for library containing pcre_study
 configure:7270: gcc -o conftest -g -O2 -pipe -ffast-math -Wall -Wno-unused-parameter -Wno-maybe-uninitialized -Wno-clobbered -Wempty-body -Wno-switch -Wno-missing-field-initializers -Wshadow -fPIC -fno-strict-aliasing  -DMAXCONN=16384 -I../common -DHAS_TLS -DHAVE_SETRLIMIT -DHAVE_STRNLEN  -I/usr/include -DHAVE_MONOTONIC_CLOCK  -L/usr/lib conftest.c -lpthread -lm -lz  >&5
-/tmp/ccUNYoYd.o: In function `main':
+/tmp/ccEeANpe.o: In function `main':
 /home/divinero123/rAthena/conftest.c:39: undefined reference to `pcre_study'
 collect2: error: ld returned 1 exit status
 configure:7270: $? = 1

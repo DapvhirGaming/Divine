@@ -14,9 +14,9 @@
 //==================================================
 // c_tower1 - Clock Tower 1f
 //==================================================
-c_tower1,0,0,0,0	monster	Rideword	1195,70,5000,0,0
-c_tower1,0,0,0,0	monster	Punk	1199,70,5000,0,0
-c_tower1,0,0,0,0	monster	Bathory	1102,1,5000,0,0
+c_tower1,0,0,0,0	monster	Rideword	1195,410,5000,0,0
+c_tower1,0,0,0,0	monster	Punk	1199,50,5000,0,0
+c_tower1,0,0,0,0	monster	Bathory	1102,200,5000,0,0
 c_tower1,0,0,0,0	monster	Clock Tower Manager	1270,1,5000,0,0
 
 //==================================================

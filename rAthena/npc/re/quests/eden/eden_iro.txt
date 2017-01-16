@@ -397,81 +397,81 @@ moc_para01,163,51,7	script	Izaac#edco	86,{
 
 // Safe to 7 Certificate Exchanger
 //============================================================
-moc_para01,50,39,4	script	Eve Natalia	882,{
-	mes "[Eve Natalia]";
-	mes "So I'm in town for a while to see if I can strike up some commerce with MVP hunters!";
-	mes "I'm willing to take some MVP gear and give you these upgrade Certificates I have in exchange;";
-	mes "if things go well enough I'll open up further business opportunities!";
-	next;
-	mes "[Eve Natalia]";
-	mes "So do you have any of the gears I'm looking for to get some random Safe to 7 Certificates?";
-	next;
-	switch(select("What gear?:Yes I am!:Never mind.")) {
-	case 1:
-		mes "[Eve Natalia]";
-		mes "Nidhoggur's Shadow Garb 4 Random Safe to 7 Certificates";
-		mes "Valkyrja's Shield 4 Random Safe to 7 Certificates";
-		mes "Valkyrian Armor 5 Random Safe to 7 Certificates";
-		mes "Diabolus Robe 5 Random Safe to 7 Certificates";
-		mes "Diabolus Armor 2 Random Safe to 7 Certificates";
-		mes "Diabolus Boots 2 Random Safe to 7 Certificates";
-		mes "Diabolus Manteau 4 Random Safe to 7 Certificates";
-		mes "Twin Edge of Naght Sieger Blue 2 Random Safe to 7 Certificates";
-		mes "Twin Edge of Naght Sieger Red 2 Random Safe to 7 Certificates";
-		close;
-	case 2:
-		mes "[Eve Natalia]";
-		mes "I'm going to ask you which piece of gear you want to trade in, please verify that the 1st one in your inventory is one you want to give up.";
-		mes "^CC0000So if it is carded, upgraded, enchanted etc, you should put it in storage before we continue.^000000";
-		next;
-		set .@i, select("Wait a minute:Nidhoggur's Shadow Garb 4:Valkyrja's Shield 4:Valkyrian Armor 5:Diabolus Robe 5:Diabolus Armor 2:Diabolus Boots 2:Diabolus Manteau 4:Twin Edge of Naght Sieger Blue 2:Twin Edge of Naght Sieger Red 2")-2;
-		if (.@i == -1)
-			break;
+//moc_para01,50,39,4	script	Eve Natalia	882,{
+	//mes "[Eve Natalia]";
+	//mes "So I'm in town for a while to see if I can strike up some commerce with MVP hunters!";
+	//mes "I'm willing to take some MVP gear and give you these upgrade Certificates I have in exchange;";
+	//mes "if things go well enough I'll open up further business opportunities!";
+	//next;
+	//mes "[Eve Natalia]";
+	//mes "So do you have any of the gears I'm looking for to get some random Safe to 7 Certificates?";
+	//next;
+	//switch(select("What gear?:Yes I am!:Never mind.")) {
+	//case 1:
+	//	mes "[Eve Natalia]";
+	//	mes "Nidhoggur's Shadow Garb 4 Random Safe to 7 Certificates";
+	//	mes "Valkyrja's Shield 4 Random Safe to 7 Certificates";
+	//	mes "Valkyrian Armor 5 Random Safe to 7 Certificates";
+		//mes "Diabolus Robe 5 Random Safe to 7 Certificates";
+		//mes "Diabolus Armor 2 Random Safe to 7 Certificates";
+		//mes "Diabolus Boots 2 Random Safe to 7 Certificates";
+		//mes "Diabolus Manteau 4 Random Safe to 7 Certificates";
+		//mes "Twin Edge of Naght Sieger Blue 2 Random Safe to 7 Certificates";
+		//mes "Twin Edge of Naght Sieger Red 2 Random Safe to 7 Certificates";
+		//close;
+	//case 2:
+		//mes "[Eve Natalia]";
+		//mes "I'm going to ask you which piece of gear you want to trade in, please verify that the 1st one in your inventory is one you want to give up.";
+		//mes "^CC0000So if it is carded, upgraded, enchanted etc, you should put it in storage before we continue.^000000";
+		//next;
+		//set .@i, select("Wait a minute:Nidhoggur's Shadow Garb 4:Valkyrja's Shield 4:Valkyrian Armor 5:Diabolus Robe 5:Diabolus Armor 2:Diabolus Boots 2:Diabolus Manteau 4:Twin Edge of Naght Sieger Blue 2:Twin Edge of Naght Sieger Red 2")-2;
+		//if (.@i == -1)
+		//	break;
 
-		setarray .@items[0],   2554, 2115, 2357, 2374, 2375, 2433, 2537, 13412, 13413;
-		setarray .@tickets[0],    4,    4,    5,    5,    2,    2,    4,     2,     2;
-
-		set .@item, .@items[.@i];
-		set .@amount, .@tickets[.@i];
-
-		mes "[Eve Natalia]";
-		mes "I see you have "+countitem(.@item)+" "+getitemname(.@item)+".";
-		mes "So do you want to trade the 1st one in your inventory for ^00CC00"+.@amount+" Random Safe to 7 Certificates^000000?";
-		mes "Tell me '1' if you do, or '0' to cancel.";
-		next;
-		input .@input;
-		if (.@input < 0 || .@input > 1) {
-			mes "[Eve Natalia]";
-			mes "It is a 0 or 1, it can't be that difficult.";
-			close;
-		} else if (.@input == 0) {
-			mes "[Eve Natalia]";
-			mes "It's best to be sure before trading, have a good day.";
-			close;
-		}
-		if (countitem(.@item) == 0) {
-			mes "[Eve Natalia]";
-			mes "You don't even have 1... stop wasting my time.";
-			close;
-		}
-		mes "[Eve Natalia]";
-		mes "Oh perfect, you get ^CC0000" + .@amount + "^000000 Safe to 7 Certificates!";
-		delitem .@item,1;
-		for(set .@i,0; .@i<.@amount; set .@i,.@i+1) {
+		//setarray .@items[0],   2554, 2115, 2357, 2374, 2375, 2433, 2537, 13412, 13413;
+		//setarray .@tickets[0],    4,    4,    5,    5,    2,    2,    4,     2,     2;
+//
+	//	set .@item, .@items[.@i];
+	//	set .@amount, .@tickets[.@i];
+//
+	//	mes "[Eve Natalia]";
+	//	mes "I see you have "+countitem(.@item)+" "+getitemname(.@item)+".";
+	//	mes "So do you want to trade the 1st one in your inventory for ^00CC00"+.@amount+" Random Safe to 7 Certificates^000000?";
+	//	mes "Tell me '1' if you do, or '0' to cancel.";
+	//	next;
+	//	input .@input;
+	//	if (.@input < 0 || .@input > 1) {
+	//		mes "[Eve Natalia]";
+	//		mes "It is a 0 or 1, it can't be that difficult.";
+	//		close;
+	//	} else if (.@input == 0) {
+	//		mes "[Eve Natalia]";
+	//		mes "It's best to be sure before trading, have a good day.";
+	//		close;
+	//	}
+	//	if (countitem(.@item) == 0) {
+	//		mes "[Eve Natalia]";
+	//		mes "You don't even have 1... stop wasting my time.";
+	//		close;
+	//	}
+	//	mes "[Eve Natalia]";
+	//	mes "Oh perfect, you get ^CC0000" + .@amount + "^000000 Safe to 7 Certificates!";
+	//	delitem .@item,1;
+	//	for(set .@i,0; .@i<.@amount; set .@i,.@i+1) {
 			// Note: iRO lists item 6235 as "Safe to 7 Headgear Certificate", but it's Guarantee_Armor_6Up in our database.
-			if (rand(2))
-				getitem 6230,1; //Guarantee_Weapon_7Up
-			else
-				getitem 6234,1; //Guarantee_Armor_7Up
-		}
-		close;
-	case 3:
-		break;
-	}
-	mes "[Eve Natalia]";
-	mes "Fair enough, if you have business with me in the future don't be shy!";
-	close;
-}
+	//		if (rand(2))
+	//			getitem 6230,1; //Guarantee_Weapon_7Up
+	//		else
+	//			getitem 6234,1; //Guarantee_Armor_7Up
+	//	}
+	//	close;
+	//case 3:
+	//	break;
+	//}
+	//mes "[Eve Natalia]";
+	//mes "Fair enough, if you have business with me in the future don't be shy!";
+	//close;
+//}
 
 // Bubble Gum & Battle Manual Exchanger
 //============================================================

@@ -523,7 +523,7 @@ ein_in01,38,29,0	script	Paul Spanner	63,{
 // Weapon/Armor Refiners
 //============================================================
 prt_in,63,60,0	script	Hollgrehenn	85,{
-	callfunc "refinemain","Hollgrehenn",0;
+	callfunc "refinemain","Hollgrehenn",1;
 	end;
 }
 morocc_in,73,38,6	script	Aragham	99,{

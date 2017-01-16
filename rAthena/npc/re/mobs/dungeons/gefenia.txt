@@ -17,13 +17,13 @@
 //==================================================
 // gefenia01 - Geffenia
 //==================================================
-gefenia01,0,0,0,0	monster	False Angel	1371,160,5000,0,0
-gefenia01,0,0,0,0	monster	Violy	1390,130,5000,0,0
-gefenia01,0,0,0,0	monster	Mini Demon	1292,120,5000,0,0
+gefenia01,0,0,0,0	monster	False Angel	1371,80,5000,0,0
+gefenia01,0,0,0,0	monster	Violy	1390,50,5000,0,0
+gefenia01,0,0,0,0	monster	Mini Demon	1292,60,5000,0,0
 gefenia01,0,0,0,0	monster	Abysmal Knight	1219,10,5000,0,0
 gefenia01,0,0,0,0	monster	Incubus	1374,50,5000,0,0
 gefenia01,0,0,0,0	monster	Succubus	1370,50,5000,0,0
-gefenia01,0,0,0,0	monster	Bloody Knight	1268,1,3600000,3000000,0
+gefenia01,0,0,0,0	monster	Bloody Knight	1268,2,3600000,3000000,0
 gefenia01,0,0,0,0	monster	Mysteltainn	1203,5,10800000,7200000,0
 gefenia01,0,0,0,0	monster	Executioner	1205,5,18000000,14400000,0
 gefenia01,0,0,0,0	monster	Ogretooth	1204,5,18000000,14400000,0
@@ -31,13 +31,13 @@ gefenia01,0,0,0,0	monster	Ogretooth	1204,5,18000000,14400000,0
 //==================================================
 // gefenia02 - Geffenia
 //==================================================
-gefenia02,0,0,0,0	monster	Violy	1390,140,5000,0,0
-gefenia02,0,0,0,0	monster	Mini Demon	1292,130,5000,0,0
-gefenia02,0,0,0,0	monster	False Angel	1371,130,5000,0,0
+gefenia02,0,0,0,0	monster	Violy	1390,50,5000,0,0
+gefenia02,0,0,0,0	monster	Mini Demon	1292,60,5000,0,0
+gefenia02,0,0,0,0	monster	False Angel	1371,60,5000,0,0
 gefenia02,0,0,0,0	monster	Succubus	1370,40,5000,0,0
 gefenia02,0,0,0,0	monster	Abysmal Knight	1219,10,5000,0,0
 gefenia02,0,0,0,0	monster	Incubus	1374,40,5000,0,0
-gefenia02,0,0,0,0	monster	Bloody Knight	1268,1,3600000,3000000,0
+gefenia02,0,0,0,0	monster	Bloody Knight	1268,2,3600000,3000000,0
 gefenia02,0,0,0,0	monster	Ogretooth	1204,5,10800000,7200000,0
 gefenia02,0,0,0,0	monster	Mysteltainn	1203,5,18000000,14400000,0
 gefenia02,0,0,0,0	monster	Executioner	1205,5,18000000,14400000,0
@@ -45,13 +45,13 @@ gefenia02,0,0,0,0	monster	Executioner	1205,5,18000000,14400000,0
 //==================================================
 // gefenia03 - Geffenia
 //==================================================
-gefenia03,0,0,0,0	monster	False Angel	1371,140,5000,0,0
-gefenia03,0,0,0,0	monster	Violy	1390,140,5000,0,0
-gefenia03,0,0,0,0	monster	Mini Demon	1292,130,5000,0,0
-gefenia03,0,0,0,0	monster	Incubus	1374,120,5000,0,0
+gefenia03,0,0,0,0	monster	False Angel	1371,70,5000,0,0
+gefenia03,0,0,0,0	monster	Violy	1390,70,5000,0,0
+gefenia03,0,0,0,0	monster	Mini Demon	1292,60,5000,0,0
+gefenia03,0,0,0,0	monster	Incubus	1374,60,5000,0,0
 gefenia03,0,0,0,0	monster	Abysmal Knight	1219,10,5000,0,0
-gefenia03,0,0,0,0	monster	Succubus	1370,10,5000,0,0
-gefenia03,0,0,0,0	monster	Bloody Knight	1268,1,3600000,3000000,0
+gefenia03,0,0,0,0	monster	Succubus	1370,40,5000,0,0
+gefenia03,0,0,0,0	monster	Bloody Knight	1268,2,3600000,3000000,0
 gefenia03,0,0,0,0	monster	Executioner	1205,5,10800000,7200000,0
 gefenia03,0,0,0,0	monster	Mysteltainn	1203,5,18000000,14400000,0
 gefenia03,0,0,0,0	monster	Ogretooth	1204,5,18000000,14400000,0
